@@ -31,8 +31,10 @@ export const BikeTable = () => {
   };
 
   return (
-    <div>
-      <Table style={{ marginTop: '40px' }}>
+    <div style={{ marginTop: '5vh' }}>
+      <Heading>List of bikes</Heading>
+
+      <Table>
         <TableHeader>
           <TableRow>
             <TableCell scope="col">

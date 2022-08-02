@@ -23,7 +23,7 @@ const ManagerDashboard: NextPage = () => (
       <SideNav />
     </Box>
     <Box gridArea="main">
-      <Page kind="narrow">
+      <Page kind="wide">
         <PageContent>
           <AddNewBikeForm />
         </PageContent>
