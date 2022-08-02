@@ -8,14 +8,16 @@ export type BikeInfo = {
   color: string;
   location: string;
   available: boolean;
+  uid: string;
 };
 
 const BikesContext = createContext<{
-  addBike?: (v: BikeInfo) => Promise<void>;
-  deleteBike?: () => any;
-  editBike?: () => any;
-  fetchBikes?: () => any;
-  bikes: [] | null;
+  addBike: (v: Omit<BikeInfo, 'uid'>) => Promise<void>;
+  deleteBike: (v: Pick<BikeInfo, 'uid'>) => any;
+  editBike: (v: BikeInfo) => Promise<void>;
+  fetchBikes: () => Promise<void>;
+  formValidation: (v: FormikValues) => FormikErrors<any>;
+  bikes: BikeInfo[];
 } | null>(null);
 
 export const useBikes = () => {
@@ -33,8 +35,7 @@ export const BikesContextProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [bikes, setBikes] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [bikes, setBikes] = useState<BikeInfo[]>([]);
 
   const addBike = async ({
     model,
