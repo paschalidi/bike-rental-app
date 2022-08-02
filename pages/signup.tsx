@@ -25,7 +25,7 @@ const validate = (values: FormikValues) => {
 };
 
 const SignupForm = () => {
-  const { user, signup, } = useAuth();
+  const { signup, } = useAuth();
   const router = useRouter();
 
   const {
@@ -45,7 +45,7 @@ const SignupForm = () => {
     onSubmit: async ({ email, password, role }, { setSubmitting }) => {
       setSubmitting(true);
       try {
-        await signup({ email, password, role });
+        await signup?.({ email, password, role });
         router.push('/');
       } catch (error) {
         setErrors({

@@ -30,7 +30,7 @@ export const TopBar = () => {
       </Heading>
       {(() => {
         if (user?.uid) {
-          return <Button label="Sign out" onClick={() => logout()} />;
+          return <Button label="Sign out" onClick={() => logout?.()} />;
         }
 
         return (
