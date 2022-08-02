@@ -9,50 +9,16 @@ import {
   Page,
   PageContent,
   RangeInput,
-  TextInput
+  TextInput,
 } from 'grommet';
 import React, { useState } from 'react';
-import type { FormikValues } from 'formik';
 import { useFormik } from 'formik';
-import { useRouter } from 'next/router';
 import { TopBar } from '../../components/TopBar';
 import { useBikes } from '../../contexts/bikes';
 import { SideNav } from '../../components/SideNav';
 
-const validate = (values: FormikValues) => {
-  const errors: FormikValues = {};
-
-  if (!values.model) {
-    errors.model = 'Required';
-  } else if (values.model.length < 3) {
-    errors.model = 'Must be 3 characters or more';
-  }
-
-  if (!values.color) {
-    errors.color = 'Required';
-  } else if (values.color.length < 3) {
-    errors.color = 'Must be 3 characters or more';
-  }
-
-  if (!values.location) {
-    errors.location = 'Required';
-  } else if (values.location.length < 3) {
-    errors.location = 'Must be 3 characters or more';
-  }
-
-  if (!values.rating) {
-    errors.rating = 'Required';
-  }
-
-  if (!values.available) {
-    errors.available = 'Required';
-  }
-  return errors;
-};
-
 const AddNewBikeForm = () => {
-  const { addBike } = useBikes();
-  const router = useRouter();
+  const { addBike, formValidation } = useBikes();
   const [showSuccessNotification, setShowSuccessNotification] = useState(false);
 
   const {
@@ -65,6 +31,8 @@ const AddNewBikeForm = () => {
     setFieldValue,
     resetForm,
   } = useFormik({
+    validateOnBlur: true,
+    validateOnChange: false,
     initialValues: {
       model: '',
       color: '',
@@ -72,14 +40,14 @@ const AddNewBikeForm = () => {
       available: false,
       rating: 5,
     },
-    validate,
+    validate: formValidation,
     onSubmit: async (
       { model, rating, color, location, available },
       { setSubmitting }
     ) => {
       setSubmitting(true);
       try {
-        await addBike?.({ model, rating, color, location, available });
+        await addBike({ model, rating, color, location, available });
         setShowSuccessNotification(true);
         resetForm();
       } catch (error) {
@@ -96,7 +64,7 @@ const AddNewBikeForm = () => {
     <>
       {showSuccessNotification && (
         <Notification
-          actions={[{ label: 'View all bikes', href: '/manager/dashboard' }]}
+          actions={[{ label: 'View all bikes', href: '/manager/bikes' }]}
           toast
           status="normal"
           title="You have added a new bike."
