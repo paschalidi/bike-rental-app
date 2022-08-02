@@ -1,5 +1,7 @@
-import React, { createContext, useContext, useMemo, useState } from 'react';
-import { addDoc, collection, doc, getDoc } from '@firebase/firestore';
+import React, { createContext, useCallback, useContext, useMemo, useState } from 'react';
+import { collection, doc, onSnapshot, setDoc, updateDoc } from '@firebase/firestore';
+import { v4 as uuid } from 'uuid';
+import { FormikErrors, FormikValues } from 'formik';
 import { db } from '../../config.firebase';
 
 export type BikeInfo = {
@@ -43,15 +45,19 @@ export const BikesContextProvider = ({
     color,
     location,
     available,
-  }: BikeInfo) => {
+  }: Omit<BikeInfo, 'uid'>) => {
     try {
-      await addDoc(collection(db, 'bikes'), {
+      const uid = uuid();
+      const docRef = doc(db, 'bikes', uid);
+      const data = {
         model,
         rating,
         color,
         location,
         available,
-      });
+        uid,
+      };
+      await setDoc(docRef, data);
     } catch (e) {
       console.error(e);
       throw e;
