@@ -19,15 +19,17 @@ export enum Roles {
   User = 'user',
 }
 
+type User = {
+  uid: string;
+  email: string | null;
+};
+
 const AuthContext = createContext<{
-  login?: (v: { email: string; password: string }) => any;
-  signup?: (v: { email: string; password: string; role: Roles }) => any;
-  logout?: () => any;
-  user: {
-    uid?: string;
-    email?: string;
-  } | null;
-}>({ user: null });
+  login: (v: { email: string; password: string }) => void;
+  signup: (v: { email: string; password: string; role: Roles }) => void;
+  logout: () => void;
+  user: User | null;
+} | null>(null);
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
@@ -44,15 +46,15 @@ export const AuthContextProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
         setUser({
-          uid: currentUser.uid,
           email: currentUser.email,
+          uid: currentUser.uid,
         });
       } else {
         setUser(null);
