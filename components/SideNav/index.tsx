@@ -36,7 +36,7 @@ export const SideNav = () => {
         background="light-2"
         pad={{ left: 'medium', right: 'large', vertical: 'medium' }}
       >
-        <Nav gap="large" responsive={false}>
+        <Nav gap="small" responsive={false}>
           <SidebarButton
             icon={<Add/>}
             label="Add Bikes"
@@ -51,6 +51,7 @@ export const SideNav = () => {
               router.push('/manager/bikes');
             }}
           />
+          <hr/>
           <SidebarButton
             icon={<UserAdd />}
             label="Add Users"
@@ -60,7 +61,7 @@ export const SideNav = () => {
           />
           <SidebarButton
             icon={<Group />}
-            label="Edit Users"
+            label="View & Edit Users"
             onClick={() => {
               router.push('/manager/edit-users');
             }}
