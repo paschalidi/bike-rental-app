@@ -1,11 +1,17 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
   signInWithEmailAndPassword,
   signOut,
 } from 'firebase/auth';
-import { addDoc, collection, doc, setDoc } from '@firebase/firestore';
+import { doc, setDoc } from '@firebase/firestore';
 import { auth, db } from '../../config.firebase';
 
 export enum Roles {
@@ -96,8 +102,13 @@ export const AuthContextProvider = ({
     await signOut(auth);
   };
 
+  const contextValues = useMemo(
+    () => ({ user, login, signup, logout }),
+    [user]
+  );
+
   return (
-    <AuthContext.Provider value={{ user, login, signup, logout }}>
+    <AuthContext.Provider value={contextValues}>
       {loading ? null : children}
     </AuthContext.Provider>
   );
