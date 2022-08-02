@@ -101,7 +101,7 @@ export const BikesContextProvider = ({
     }
   };
 
-  const deleteBike = async () => {};
+  const deleteBike = async () => null;
 
   const fetchBikes = useCallback(async () => {
     try {
