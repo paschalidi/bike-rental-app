@@ -12,7 +12,7 @@ import {
   signOut,
 } from 'firebase/auth';
 import { doc, setDoc } from '@firebase/firestore';
-import { auth, db } from '../../config.firebase';
+import { auth, db } from '../../config/config.firebase';
 
 // TODO: Add eslint rule for this warning
 export enum Roles {

@@ -2,7 +2,7 @@ import React, { createContext, useCallback, useContext, useMemo, useState } from
 import { collection, doc, onSnapshot, setDoc, updateDoc } from '@firebase/firestore';
 import { v4 as uuid } from 'uuid';
 import { FormikErrors, FormikValues } from 'formik';
-import { db } from '../../config.firebase';
+import { db } from '../../config/config.firebase';
 
 export type BikeInfo = {
   model: string;

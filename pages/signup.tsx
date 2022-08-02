@@ -4,7 +4,7 @@ import React from 'react';
 import type { FormikValues } from 'formik';
 import { useFormik } from 'formik';
 import { useRouter } from 'next/router';
-import { Roles, useAuth } from '../contexts/auth';
+import { Roles, useAuth } from '../src/contexts/auth';
 
 const validate = (values: FormikValues) => {
   const errors: FormikValues = {};

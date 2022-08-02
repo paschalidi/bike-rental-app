@@ -1,9 +1,9 @@
 import type { NextPage } from 'next';
 import { Box, Grid, Page, PageContent } from 'grommet';
 import React from 'react';
-import { TopBar } from '../../components/TopBar';
-import { SideNav } from '../../components/SideNav';
-import { AddNewBikeForm } from '../../components/AddNewBikeForm';
+import { TopBar } from '../../src/components/TopBar';
+import { SideNav } from '../../src/components/SideNav';
+import { AddNewBikeForm } from '../../src/components/AddNewBikeForm';
 
 const ManagerDashboard: NextPage = () => (
   <Grid
