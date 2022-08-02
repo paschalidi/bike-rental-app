@@ -64,10 +64,48 @@ export const BikesContextProvider = ({
 
   const fetchBikes = async () => {};
 
-  const contextValues = useMemo(() => ({ addBike, bikes }), [bikes]);
+  const formValidation = (values: FormikValues) => {
+    const errors: FormikValues = {};
+
+    if (!values.model) {
+      errors.model = 'Required';
+    } else if (values.model.length < 3) {
+      errors.model = 'Must be 3 characters or more';
+    }
+
+    if (!values.color) {
+      errors.color = 'Required';
+    } else if (values.color.length < 3) {
+      errors.color = 'Must be 3 characters or more';
+    }
+
+    if (!values.location) {
+      errors.location = 'Required';
+    } else if (values.location.length < 3) {
+      errors.location = 'Must be 3 characters or more';
+    }
+
+    if (!values.rating) {
+      errors.rating = 'Required';
+    }
+
+    return errors;
+  };
+
+  const contextValues = useMemo(
+    () => ({
+      addBike,
+      bikes,
+      fetchBikes,
+      formValidation,
+      editBike,
+      deleteBike,
+    }),
+    [bikes]
+  );
 
   return (
-    <BikesContext.Provider value={{ addBike, bikes }}>
+    <BikesContext.Provider value={contextValues}>
       {children}
     </BikesContext.Provider>
   );
