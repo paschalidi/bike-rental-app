@@ -14,6 +14,7 @@ import {
 import { doc, setDoc } from '@firebase/firestore';
 import { auth, db } from '../../config.firebase';
 
+// TODO: Add eslint rule for this warning
 export enum Roles {
   Manager = 'manager',
   User = 'user',
