@@ -25,7 +25,7 @@ const validate = (values: FormikValues) => {
 };
 
 const SignupForm = () => {
-  const { signup, } = useAuth();
+  const { signup } = useAuth();
   const router = useRouter();
 
   const {
@@ -36,6 +36,8 @@ const SignupForm = () => {
     isSubmitting,
     setErrors,
   } = useFormik({
+    validateOnBlur: true,
+    validateOnChange: false,
     initialValues: {
       email: '',
       password: '',
@@ -84,7 +86,7 @@ const SignupForm = () => {
       />
 
       <Button
-        style={{marginTop: '40px'}}
+        style={{ marginTop: '40px' }}
         primary
         label="sign up"
         type="submit"
