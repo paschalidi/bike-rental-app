@@ -64,11 +64,56 @@ export const BikesContextProvider = ({
     }
   };
 
-  const editBike = async () => {};
+  const editBike = async ({
+    model,
+    rating,
+    color,
+    location,
+    available,
+    uid,
+  }: BikeInfo) => {
+    try {
+      const docRef = doc(db, 'bikes', uid);
+      const data = {
+        model,
+        rating,
+        color,
+        location,
+        available,
+        uid,
+      };
+      await updateDoc(docRef, data);
+    } catch (e) {
+      console.error(e);
+      throw e;
+    }
+  };
 
   const deleteBike = async () => {};
 
-  const fetchBikes = async () => {};
+  const fetchBikes = useCallback(async () => {
+    try {
+      const colRef = collection(db, 'bikes');
+
+      onSnapshot(colRef, (snapshot) => {
+        const listOfBikes = [] as BikeInfo[];
+        snapshot.docs.forEach((document) => {
+          listOfBikes.push({
+            model: document.data().model,
+            color: document.data().color,
+            rating: document.data().rating,
+            location: document.data().location,
+            available: document.data().available,
+            uid: document.data().uid,
+          });
+        });
+        setBikes(listOfBikes);
+      });
+    } catch (e) {
+      console.error(e);
+      throw e;
+    }
+  }, []);
 
   const formValidation = (values: FormikValues) => {
     const errors: FormikValues = {};
