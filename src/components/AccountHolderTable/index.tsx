@@ -9,7 +9,7 @@ import {
   TableCell,
   TableHeader,
   TableRow,
-  Text
+  Text,
 } from 'grommet';
 import { Edit, Trash } from 'grommet-icons';
 import { useAccounts } from '../../contexts/accounts';
@@ -40,8 +40,8 @@ export const AccountHolderTable = () => {
     setOpenDeletionModalUid('');
   };
 
-  const handleDeletionBike = (bikeUid: string) => {
-    deleteAccount({ uid: bikeUid });
+  const handleDeletionAccount = (accountUid: string) => {
+    deleteAccount({ uid: accountUid });
     setOpenDeletionModalUid('');
   };
 
@@ -111,42 +111,44 @@ export const AccountHolderTable = () => {
             </Box>
           </Layer>
         ))}
-      {/* {bikes */}
-      {/*  .filter((bike) => bike.uid === openDeletionModalUid) */}
-      {/*  .map(({ uid, model }) => ( */}
-      {/*    <Layer */}
-      {/*      key={uid} */}
-      {/*      style={{ width: '50vw' }} */}
-      {/*      onEsc={handleCloseEditorialModal} */}
-      {/*      onClickOutside={handleCloseEditorialModal} */}
-      {/*    > */}
-      {/*      <Box */}
-      {/*        direction="column" */}
-      {/*        border={{ color: 'brand', size: 'small' }} */}
-      {/*        pad="medium" */}
-      {/*      > */}
-      {/*        <Box pad="small"> */}
-      {/*          <Heading style={{ marginTop: 0 }}> */}
-      {/*            Deleting bike: {model} */}
-      {/*          </Heading> */}
+      {accounts
+        .filter((account) => account.uid === openDeletionModalUid)
+        .map(({ uid, email }) => (
+          <Layer
+            key={uid}
+            style={{ width: '50vw' }}
+            onEsc={handleCloseEditorialModal}
+            onClickOutside={handleCloseEditorialModal}
+          >
+            <Box
+              direction="column"
+              border={{ color: 'brand', size: 'small' }}
+              pad="medium"
+            >
+              <Box pad="small">
+                <Heading style={{ marginTop: 0 }}>Deleting</Heading>
+                <Text style={{ marginBottom: 24 }}>
+                  Are you sure you want to delete the account with email{' '}
+                  <b>{email}</b>?
+                </Text>
 
-      {/*          <Box direction="row" align="center" gap="small" pad="xsmall"> */}
-      {/*            <Button */}
-      {/*              label="close modal" */}
-      {/*              onClick={handleCloseDeletionModal} */}
-      {/*            /> */}
-      {/*            <Button */}
-      {/*              color="status-error" */}
-      {/*              primary */}
-      {/*              icon={<Trash />} */}
-      {/*              label="delete bike" */}
-      {/*              onClick={() => handleDeletionBike(uid)} */}
-      {/*            /> */}
-      {/*          </Box> */}
-      {/*        </Box> */}
-      {/*      </Box> */}
-      {/*    </Layer> */}
-      {/*  ))} */}
+                <Box direction="row" align="center" gap="small" pad="xsmall">
+                  <Button
+                    label="close modal"
+                    onClick={handleCloseDeletionModal}
+                  />
+                  <Button
+                    color="status-error"
+                    primary
+                    icon={<Trash />}
+                    label="delete account"
+                    onClick={() => handleDeletionAccount(uid)}
+                  />
+                </Box>
+              </Box>
+            </Box>
+          </Layer>
+        ))}
     </div>
   );
 };

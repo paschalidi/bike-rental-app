@@ -1,32 +1,17 @@
 import { FormikValues, useFormik } from 'formik';
 import { useRouter } from 'next/router';
-import { Button, FormField, RadioButtonGroup, TextInput } from 'grommet';
-import React from 'react';
+import { Button, FormField, Notification, RadioButtonGroup, TextInput } from 'grommet';
+import React, { useState } from 'react';
 import { Roles, useAuth } from '../../contexts/auth';
 
-export const AddNewAccountForm = () => {
-  const validate = (values: FormikValues) => {
-    const errors: FormikValues = {};
-
-    if (!values.password) {
-      errors.password = 'Required';
-    } else if (values.password.length < 5) {
-      errors.password = 'Must be 5 characters or more';
-    }
-
-    if (!values.email) {
-      errors.email = 'Required';
-    } else if (
-      !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)
-    ) {
-      errors.email = 'Invalid email address';
-    }
-
-    return errors;
-  };
-
+export const AddNewAccountForm = ({
+  redirectAfterCreation = true,
+}: {
+  redirectAfterCreation?: boolean; // eslint-disable-line
+}) => {
   const { signup } = useAuth();
   const router = useRouter();
+  const [showSuccessNotification, setShowSuccessNotification] = useState(false);
 
   const {
     handleChange,
@@ -35,6 +20,7 @@ export const AddNewAccountForm = () => {
     errors,
     isSubmitting,
     setErrors,
+    resetForm,
   } = useFormik({
     validateOnBlur: true,
     validateOnChange: false,
@@ -43,12 +29,38 @@ export const AddNewAccountForm = () => {
       password: '',
       role: Roles.Manager,
     },
-    validate,
+    validate: (formValues: FormikValues) => {
+      const formErrors: FormikValues = {};
+
+      if (!formValues.password) {
+        formErrors.password = 'Required';
+      } else if (formValues.password.length < 5) {
+        formErrors.password = 'Must be 5 characters or more';
+      }
+
+      if (!formValues.email) {
+        formErrors.email = 'Required';
+      } else if (
+        !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(formValues.email)
+      ) {
+        formErrors.email = 'Invalid email address';
+      }
+
+      return formErrors;
+    },
     onSubmit: async ({ email, password, role }, { setSubmitting }) => {
       setSubmitting(true);
       try {
+        setShowSuccessNotification(false)
         await signup({ email, password, role });
-        router.push(role === Roles.Manager ? '/manager/bikes' : '/user/bikes');
+        if (redirectAfterCreation) {
+          router.push(
+            role === Roles.Manager ? '/manager/bikes' : '/user/bikes'
+          );
+        } else {
+          resetForm();
+          setShowSuccessNotification(true);
+        }
       } catch (error) {
         setErrors({
           password: `Something went wrong. Please refresh the page and try again!`,
