@@ -9,7 +9,7 @@ import {
   TableCell,
   TableHeader,
   TableRow,
-  Text
+  Text,
 } from 'grommet';
 import { Edit, Trash } from 'grommet-icons';
 import { useBikes } from '../../contexts/bikes';
@@ -46,10 +46,8 @@ export const BikeTable = () => {
   };
 
   return (
-    <div style={{ marginTop: '5vh' }}>
-      <Heading>List of bikes</Heading>
-
-      <Table>
+    <>
+      <Table style={{ width: '100%' }}>
         <TableHeader>
           <TableRow>
             <TableCell scope="col">
@@ -151,7 +149,10 @@ export const BikeTable = () => {
                 </Heading>
 
                 <Box direction="row" align="center" gap="small" pad="xsmall">
-                  <Button label="close modal" onClick={handleCloseDeletionModal} />
+                  <Button
+                    label="close modal"
+                    onClick={handleCloseDeletionModal}
+                  />
                   <Button
                     color="status-error"
                     primary
@@ -164,6 +165,6 @@ export const BikeTable = () => {
             </Box>
           </Layer>
         ))}
-    </div>
+    </>
   );
 };
