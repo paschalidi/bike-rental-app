@@ -1,7 +1,6 @@
 import React, { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import { collection, deleteDoc, doc, onSnapshot, setDoc, updateDoc } from '@firebase/firestore';
 import { uuid } from 'uuidv4';
-import { FormikValues } from 'formik';
 import { db } from '../../config/config.firebase';
 import { Roles } from '../auth';
 
@@ -78,8 +77,6 @@ export const AccountsContextProvider = ({
       onSnapshot(colRef, (snapshot) => {
         const listOfAccounts = [] as AccountInfo[];
         snapshot.docs.forEach((document) => {
-          console.log("@@@@");
-          console.log(document.data());
           listOfAccounts.push({
             email: document.data().email,
             role: document.data().roles[0],
@@ -93,34 +90,6 @@ export const AccountsContextProvider = ({
       throw e;
     }
   }, []);
-
-  const formValidation = (values: FormikValues) => {
-    const errors: FormikValues = {};
-
-    if (!values.model) {
-      errors.model = 'Required';
-    } else if (values.model.length < 3) {
-      errors.model = 'Must be 3 characters or more';
-    }
-
-    if (!values.color) {
-      errors.color = 'Required';
-    } else if (values.color.length < 3) {
-      errors.color = 'Must be 3 characters or more';
-    }
-
-    if (!values.location) {
-      errors.location = 'Required';
-    } else if (values.location.length < 3) {
-      errors.location = 'Must be 3 characters or more';
-    }
-
-    if (!values.rating) {
-      errors.rating = 'Required';
-    }
-
-    return errors;
-  };
 
   const contextValues = useMemo(
     () => ({

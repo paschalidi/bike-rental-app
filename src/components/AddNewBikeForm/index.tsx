@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useFormik } from 'formik';
-import { Button, CheckBox, FormField, Heading, Notification, RangeInput, TextInput } from 'grommet';
+import { Button, CheckBox, FormField, Notification, RangeInput, TextInput } from 'grommet';
 import { useBikes } from '../../contexts/bikes';
 
 export const AddNewBikeForm = () => {
@@ -47,7 +47,7 @@ export const AddNewBikeForm = () => {
   });
 
   return (
-    <div style={{ marginTop: '5vh' }}>
+    <>
       {showSuccessNotification && (
         <Notification
           actions={[{ label: 'View all bikes', href: '/manager/bikes' }]}
@@ -56,8 +56,6 @@ export const AddNewBikeForm = () => {
           title="You have added a new bike."
         />
       )}
-
-      <Heading>Add new bike</Heading>
 
       <form onSubmit={handleSubmit}>
         <FormField label="Model" error={errors.model}>
@@ -120,6 +118,6 @@ export const AddNewBikeForm = () => {
           aria-disabled={isSubmitting}
         />
       </form>
-    </div>
+    </>
   );
 };

@@ -58,11 +58,7 @@ export const EditBikeForm = ({
   return (
     <>
       {showSuccessNotification && (
-        <Notification
-          toast
-          status="normal"
-          title="Edit is successful 🥳"
-        />
+        <Notification toast status="normal" title="Edit is successful 🥳" />
       )}
       <form onSubmit={handleSubmit}>
         <FormField label="Model" error={errors.model}>

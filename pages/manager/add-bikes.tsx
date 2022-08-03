@@ -1,5 +1,5 @@
 import type { NextPage } from 'next';
-import { Box, Grid, Page, PageContent } from 'grommet';
+import { Box, Grid, Heading, Page, PageContent } from 'grommet';
 import React from 'react';
 import { TopBar } from '../../src/components/TopBar';
 import { SideNav } from '../../src/components/SideNav';
@@ -25,7 +25,10 @@ const ManagerDashboard: NextPage = () => (
     <Box gridArea="main">
       <Page kind="wide">
         <PageContent>
-          <AddNewBikeForm />
+          <div style={{ marginTop: '5vh' }}>
+            <Heading>Add new bike</Heading>
+            <AddNewBikeForm />
+          </div>
         </PageContent>
       </Page>
     </Box>

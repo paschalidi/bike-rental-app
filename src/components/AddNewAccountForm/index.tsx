@@ -71,40 +71,51 @@ export const AddNewAccountForm = ({
   });
 
   return (
-    <form onSubmit={handleSubmit}>
-      <FormField label="Email" error={errors.email}>
-        <TextInput
-          name="email"
-          type="email"
-          value={values.email}
+    <>
+      {showSuccessNotification && (
+        <Notification
+          actions={[{ label: 'View all accounts', href: '/manager/accounts' }]}
+          toast
+          status="normal"
+          title="You have added a new account holder."
+        />
+      )}
+
+      <form onSubmit={handleSubmit}>
+        <FormField label="Email" error={errors.email}>
+          <TextInput
+            name="email"
+            type="email"
+            value={values.email}
+            onChange={handleChange}
+          />
+        </FormField>
+
+        <FormField label="Password" error={errors.password}>
+          <TextInput
+            name="password"
+            type="password"
+            value={values.password}
+            onChange={handleChange}
+          />
+        </FormField>
+
+        <RadioButtonGroup
+          name="role"
+          options={[Roles.Manager, Roles.User]}
+          value={values.role}
           onChange={handleChange}
         />
-      </FormField>
 
-      <FormField label="Password" error={errors.password}>
-        <TextInput
-          name="password"
-          type="password"
-          value={values.password}
-          onChange={handleChange}
+        <Button
+          style={{ marginTop: '40px' }}
+          primary
+          label="sign up"
+          type="submit"
+          disabled={isSubmitting}
+          aria-disabled={isSubmitting}
         />
-      </FormField>
-
-      <RadioButtonGroup
-        name="role"
-        options={[Roles.Manager, Roles.User]}
-        value={values.role}
-        onChange={handleChange}
-      />
-
-      <Button
-        style={{ marginTop: '40px' }}
-        primary
-        label="sign up"
-        type="submit"
-        disabled={isSubmitting}
-        aria-disabled={isSubmitting}
-      />
-    </form>
+      </form>
+    </>
   );
 };

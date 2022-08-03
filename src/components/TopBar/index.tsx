@@ -1,7 +1,7 @@
 import { Box, Button, Heading, Menu } from 'grommet';
 import React from 'react';
 import { useRouter } from 'next/router';
-import { useAuth } from '../../contexts/auth';
+import { Roles, useAuth } from '../../contexts/auth';
 
 export const TopBar = () => {
   const router = useRouter();
@@ -26,7 +26,7 @@ export const TopBar = () => {
           router.push('/');
         }}
       >
-        Bike rental
+        Bike Rental {user?.role === Roles.Manager ? 'for Managers' : 'for Everyone'}
       </Heading>
       {(() => {
         if (user?.uid) {
