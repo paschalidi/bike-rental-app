@@ -33,6 +33,7 @@ export const AddNewBikeForm = () => {
     ) => {
       setSubmitting(true);
       try {
+        setShowSuccessNotification(false);
         await addBike({ model, rating, color, location, available });
         setShowSuccessNotification(true);
         resetForm();

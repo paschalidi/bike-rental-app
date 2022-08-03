@@ -36,6 +36,8 @@ export const EditBikeForm = ({
     onSubmit: async (formValues, { setSubmitting }) => {
       setSubmitting(true);
       try {
+        setShowSuccessNotification(false);
+
         await editBike({
           model: formValues.model,
           rating: formValues.rating,

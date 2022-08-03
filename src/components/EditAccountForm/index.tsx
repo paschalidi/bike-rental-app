@@ -38,6 +38,8 @@ export const EditAccountForm = ({ email, role, uid }: AccountInfo) => {
     onSubmit: async (formValues, { setSubmitting }) => {
       setSubmitting(true);
       try {
+        setShowSuccessNotification(false)
+
         await editAccount({
           email: formValues.email,
           role: formValues.role,
