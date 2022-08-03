@@ -16,18 +16,33 @@ import { useBikes } from '../../contexts/bikes';
 import { EditBikeForm } from '../EditBikeForm';
 
 export const BikeTable = () => {
-  const { fetchBikes, bikes } = useBikes();
-  const [openModalUid, setOpenModalUid] = useState('');
+  const { fetchBikes, bikes, deleteBike } = useBikes();
+  const [openEditorialModalUid, setOpenEditorialModalUid] = useState('');
+  const [openDeletionModalUid, setOpenDeletionModalUid] = useState('');
 
   useEffect(() => {
     fetchBikes?.();
   }, []);
 
-  const handleEditBikeOnModal = (bikeUid: string) => {
-    setOpenModalUid(bikeUid);
+  const handleOpenEditorialModal = (bikeUid: string) => {
+    setOpenEditorialModalUid(bikeUid);
   };
-  const handleCloseModal = () => {
-    setOpenModalUid('');
+
+  const handleCloseEditorialModal = () => {
+    setOpenEditorialModalUid('');
+  };
+
+  const handleOpenDeletionModal = (bikeUid: string) => {
+    setOpenDeletionModalUid(bikeUid);
+  };
+
+  const handleCloseDeletionModal = () => {
+    setOpenDeletionModalUid('');
+  };
+
+  const handleDeletionBike = (bikeUid: string) => {
+    deleteBike({ uid: bikeUid });
+    setOpenDeletionModalUid('');
   };
 
   return (
@@ -79,9 +94,12 @@ export const BikeTable = () => {
                 <>
                   <Edit
                     style={{ cursor: 'pointer', marginRight: '8px' }}
-                    onClick={() => handleEditBikeOnModal(uid)}
+                    onClick={() => handleOpenEditorialModal(uid)}
                   />
-                  <Trash style={{ cursor: 'pointer' }} />
+                  <Trash
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => handleOpenDeletionModal(uid)}
+                  />
                 </>
               </TableCell>
             </TableRow>
@@ -89,13 +107,13 @@ export const BikeTable = () => {
         </TableBody>
       </Table>
       {bikes
-        .filter((bike) => bike.uid === openModalUid)
+        .filter((bike) => bike.uid === openEditorialModalUid)
         .map(({ model, color, location, rating, available, uid }) => (
           <Layer
             key={uid}
             style={{ width: '50vw' }}
-            onEsc={handleCloseModal}
-            onClickOutside={handleCloseModal}
+            onEsc={handleCloseEditorialModal}
+            onClickOutside={handleCloseEditorialModal}
           >
             <Box
               direction="column"
@@ -108,7 +126,40 @@ export const BikeTable = () => {
                 <EditBikeForm
                   {...{ model, color, location, rating, available, uid }}
                 />
-                <Button label="close" onClick={handleCloseModal} />
+                <Button label="close" onClick={handleCloseEditorialModal} />
+              </Box>
+            </Box>
+          </Layer>
+        ))}
+      {bikes
+        .filter((bike) => bike.uid === openDeletionModalUid)
+        .map(({ uid, model }) => (
+          <Layer
+            key={uid}
+            style={{ width: '50vw' }}
+            onEsc={handleCloseEditorialModal}
+            onClickOutside={handleCloseEditorialModal}
+          >
+            <Box
+              direction="column"
+              border={{ color: 'brand', size: 'small' }}
+              pad="medium"
+            >
+              <Box pad="small">
+                <Heading style={{ marginTop: 0 }}>
+                  Deleting bike: {model}
+                </Heading>
+
+                <Box direction="row" align="center" gap="small" pad="xsmall">
+                  <Button label="close modal" onClick={handleCloseDeletionModal} />
+                  <Button
+                    color="status-error"
+                    primary
+                    icon={<Trash />}
+                    label="delete bike"
+                    onClick={() => handleDeletionBike(uid)}
+                  />
+                </Box>
               </Box>
             </Box>
           </Layer>

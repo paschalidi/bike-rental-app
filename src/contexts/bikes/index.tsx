@@ -7,6 +7,7 @@ import React, {
 } from 'react';
 import {
   collection,
+  deleteDoc,
   doc,
   onSnapshot,
   setDoc,
@@ -101,7 +102,14 @@ export const BikesContextProvider = ({
     }
   };
 
-  const deleteBike = async () => null;
+  const deleteBike = async ({ uid }: { uid: string }) => {
+    try {
+      await deleteDoc(doc(db, 'bikes', uid));
+    } catch (e) {
+      console.error(e);
+      throw e;
+    }
+  };
 
   const fetchBikes = useCallback(async () => {
     try {
