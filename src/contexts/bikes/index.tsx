@@ -28,7 +28,7 @@ export type BikeInfo = {
 
 const BikesContext = createContext<{
   addBike: (v: Omit<BikeInfo, 'uid'>) => Promise<void>;
-  deleteBike: (v: Pick<BikeInfo, 'uid'>) => any;
+  deleteBike: (v: Pick<BikeInfo, 'uid'>) => Promise<void>;
   editBike: (v: BikeInfo) => Promise<void>;
   fetchBikes: () => Promise<void>;
   formValidation: (v: FormikValues) => FormikErrors<any>;
