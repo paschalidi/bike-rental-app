@@ -54,16 +54,16 @@ export const SideNav = () => {
           <hr/>
           <SidebarButton
             icon={<UserAdd />}
-            label="Add Users"
+            label="Add Accounts"
             onClick={() => {
-              router.push('/manager/add-users');
+              router.push('/manager/add-accounts');
             }}
           />
           <SidebarButton
             icon={<Group />}
-            label="View & Edit Users"
+            label="View & Edit Accounts"
             onClick={() => {
-              router.push('/manager/edit-users');
+              router.push('/manager/accounts');
             }}
           />
         </Nav>

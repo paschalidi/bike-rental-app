@@ -21,7 +21,7 @@ export const BikeTable = () => {
   const [openDeletionModalUid, setOpenDeletionModalUid] = useState('');
 
   useEffect(() => {
-    fetchBikes?.();
+    fetchBikes();
   }, []);
 
   const handleOpenEditorialModal = (bikeUid: string) => {

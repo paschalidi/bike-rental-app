@@ -48,7 +48,7 @@ export const EditBikeForm = ({
       } catch (error) {
         setErrors({
           rating:
-            'Something went wrong. Please refresh the page and try again!',
+            'Something went wrong when editing this bike. Please refresh the page and try again!',
         });
       }
       setSubmitting(false);
@@ -61,7 +61,7 @@ export const EditBikeForm = ({
         <Notification
           toast
           status="normal"
-          title="You have edited the bike info successfully."
+          title="Edit is successful 🥳"
         />
       )}
       <form onSubmit={handleSubmit}>
@@ -116,7 +116,7 @@ export const EditBikeForm = ({
         <Button
           style={{ marginTop: '20px', marginBottom: '8px', width: '100%' }}
           primary
-          label="save edit"
+          label="save changes"
           type="submit"
           disabled={isSubmitting}
           aria-disabled={isSubmitting}

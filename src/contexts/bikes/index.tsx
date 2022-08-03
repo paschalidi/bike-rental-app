@@ -39,7 +39,7 @@ export const useBikes = () => {
   const context = useContext(BikesContext);
 
   if (context === null) {
-    throw new Error('useAuth must be used within a Provider');
+    throw new Error('useBikes must be used within a Provider');
   }
 
   return context;
