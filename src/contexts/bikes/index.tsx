@@ -9,6 +9,7 @@ import {
   collection,
   deleteDoc,
   doc,
+  getDoc,
   onSnapshot,
   setDoc,
   updateDoc,
@@ -19,10 +20,15 @@ import { db } from '../../config/config.firebase';
 
 export type BikeInfo = {
   model: string;
-  rating: number;
+  rating: string;
   color: string;
   location: string;
   available: boolean;
+  uid: string;
+};
+
+export type EditBikeProps = {
+  rating: string;
   uid: string;
 };
 
@@ -30,6 +36,7 @@ const BikesContext = createContext<{
   addBike: (v: Omit<BikeInfo, 'uid'>) => Promise<void>;
   deleteBike: (v: Pick<BikeInfo, 'uid'>) => Promise<void>;
   editBike: (v: BikeInfo) => Promise<void>;
+  editBikeRating: (v: EditBikeProps) => Promise<void>;
   fetchBikes: () => Promise<void>;
   formValidation: (v: FormikValues) => FormikErrors<any>;
   bikes: BikeInfo[];
@@ -87,6 +94,7 @@ export const BikesContextProvider = ({
   }: BikeInfo) => {
     try {
       const docRef = doc(db, 'bikes', uid);
+
       const data = {
         model,
         rating,
@@ -96,6 +104,27 @@ export const BikesContextProvider = ({
         uid,
       };
       await updateDoc(docRef, data);
+    } catch (e) {
+      console.error(e);
+      throw e;
+    }
+  };
+
+  const editBikeRating = async ({ rating, uid }: EditBikeProps) => {
+    try {
+      const docRef = doc(db, 'bikes', uid);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const existingRating = parseInt(docSnap.data().rating, 10);
+        const incomingRating = parseInt(rating, 10);
+
+        const data = {
+          rating: Number(((incomingRating + existingRating) / 2).toFixed(1)),
+          uid,
+        };
+        await updateDoc(docRef, data);
+      }
     } catch (e) {
       console.error(e);
       throw e;
@@ -170,6 +199,7 @@ export const BikesContextProvider = ({
       fetchBikes,
       formValidation,
       editBike,
+      editBikeRating,
       deleteBike,
     }),
     [bikes]
