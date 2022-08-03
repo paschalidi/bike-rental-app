@@ -1,0 +1,98 @@
+import { FormikValues, useFormik } from 'formik';
+import { useRouter } from 'next/router';
+import { Button, FormField, RadioButtonGroup, TextInput } from 'grommet';
+import React from 'react';
+import { Roles, useAuth } from '../../contexts/auth';
+
+export const AddNewAccountForm = () => {
+  const validate = (values: FormikValues) => {
+    const errors: FormikValues = {};
+
+    if (!values.password) {
+      errors.password = 'Required';
+    } else if (values.password.length < 5) {
+      errors.password = 'Must be 5 characters or more';
+    }
+
+    if (!values.email) {
+      errors.email = 'Required';
+    } else if (
+      !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)
+    ) {
+      errors.email = 'Invalid email address';
+    }
+
+    return errors;
+  };
+
+  const { signup } = useAuth();
+  const router = useRouter();
+
+  const {
+    handleChange,
+    values,
+    handleSubmit,
+    errors,
+    isSubmitting,
+    setErrors,
+  } = useFormik({
+    validateOnBlur: true,
+    validateOnChange: false,
+    initialValues: {
+      email: '',
+      password: '',
+      role: Roles.Manager,
+    },
+    validate,
+    onSubmit: async ({ email, password, role }, { setSubmitting }) => {
+      setSubmitting(true);
+      try {
+        await signup({ email, password, role });
+        router.push(role === Roles.Manager ? '/manager/bikes' : '/user/bikes');
+      } catch (error) {
+        setErrors({
+          password: `Something went wrong. Please refresh the page and try again!`,
+        });
+      }
+      setSubmitting(false);
+    },
+  });
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <FormField label="Email" error={errors.email}>
+        <TextInput
+          name="email"
+          type="email"
+          value={values.email}
+          onChange={handleChange}
+        />
+      </FormField>
+
+      <FormField label="Password" error={errors.password}>
+        <TextInput
+          name="password"
+          type="password"
+          value={values.password}
+          onChange={handleChange}
+        />
+      </FormField>
+
+      <RadioButtonGroup
+        name="role"
+        options={[Roles.Manager, Roles.User]}
+        value={values.role}
+        onChange={handleChange}
+      />
+
+      <Button
+        style={{ marginTop: '40px' }}
+        primary
+        label="sign up"
+        type="submit"
+        disabled={isSubmitting}
+        aria-disabled={isSubmitting}
+      />
+    </form>
+  );
+};
