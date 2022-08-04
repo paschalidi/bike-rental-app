@@ -15,14 +15,16 @@ import {
   TableCell,
   TableHeader,
   TableRow,
-  Text
+  Text,
 } from 'grommet';
-import { FormSchedule, Star } from 'grommet-icons';
+import { FormClose, FormSchedule, Star } from 'grommet-icons';
 import { TopBar } from '../../src/components/TopBar';
 import { useBikes } from '../../src/contexts/bikes';
 import { SubmitBikeRatingFormOnModal } from '../../src/components/SubmitBikeRatingFormOnModal';
 import { useFilters } from '../../src/hooks/useFilters';
 import { SubmitBikeReservationFormOnModal } from '../../src/components/SubmitBikeReservationFormOnModal';
+import { useAuth } from '../../src/contexts/auth';
+import { SubmitBikeReservationCancellationFormOnModal } from '../../src/components/SubmitBikeReservationCancellationFormOnModal';
 
 const ratingOptions = [
   { value: 1, text: 'greater than 1' },
@@ -37,6 +39,7 @@ const ratingOptions = [
 ];
 
 const UserBikes: NextPage = () => {
+  const { user } = useAuth();
   const { bikes, fetchBikes } = useBikes();
   useEffect(() => {
     fetchBikes();
@@ -73,11 +76,22 @@ const UserBikes: NextPage = () => {
 
   const [activeBikeSchedulingModalUid, setActiveBikeSchedulingModalUid] =
     useState<string>('');
-  const openBikeScheduling = (uid: string) => {
+  const openBikeSchedulingModal = (uid: string) => {
     setActiveBikeSchedulingModalUid(uid);
   };
   const closeBikeSchedulingModal = () => {
     setActiveBikeSchedulingModalUid('');
+  };
+
+  const [
+    activeBikeCancelReservationModalUid,
+    setActiveBikeCancelReservationModalUid,
+  ] = useState<string>('');
+  const openBikeCancelReservationModal = (uid: string) => {
+    setActiveBikeCancelReservationModalUid(uid);
+  };
+  const closeBikeCancelReservationModal = () => {
+    setActiveBikeCancelReservationModalUid('');
   };
 
   return (
@@ -252,10 +266,19 @@ const UserBikes: NextPage = () => {
                         </TableCell>
                         <TableCell>
                           <Button
-                            onClick={() => openBikeScheduling(uid)}
+                            onClick={() => openBikeSchedulingModal(uid)}
                             secondary
                             icon={<FormSchedule />}
                           />
+                          {user?.reservations[uid] && (
+                            <Button
+                              onClick={() =>
+                                openBikeCancelReservationModal(uid)
+                              }
+                              secondary
+                              icon={<FormClose color="status-error" />}
+                            />
+                          )}
                         </TableCell>
                         <TableCell>
                           <Button
@@ -286,12 +309,23 @@ const UserBikes: NextPage = () => {
 
       {bikes
         .filter((bike) => bike.uid === activeBikeSchedulingModalUid)
-        .map(({ uid ,unavailableDates}) => (
+        .map(({ uid, unavailableDates }) => (
           <SubmitBikeReservationFormOnModal
             unavailableDates={unavailableDates}
             key={uid}
             uid={uid}
             onClose={closeBikeSchedulingModal}
+          />
+        ))}
+
+      {bikes
+        .filter((bike) => bike.uid === activeBikeCancelReservationModalUid)
+        .map(({ uid ,model}) => (
+          <SubmitBikeReservationCancellationFormOnModal
+            model={model}
+            key={uid}
+            bikeUid={uid}
+            onClose={closeBikeCancelReservationModal}
           />
         ))}
     </Grid>

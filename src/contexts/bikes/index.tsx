@@ -16,7 +16,7 @@ import {
   setDoc,
   updateDoc,
 } from '@firebase/firestore';
-import { uuid } from 'uuidv4';
+import { v4 as uuid } from 'uuid';
 import { FormikErrors, FormikValues } from 'formik';
 import { db } from '../../config/config.firebase';
 
@@ -41,6 +41,12 @@ export type EditBikeAvailabilityProps = {
   userUid?: string;
 };
 
+export type DeleteBikeReservationProps = {
+  reservationUid: string;
+  bikeUid: string;
+  userUid?: string;
+};
+
 const BikesContext = createContext<{
   addBike: (v: Omit<BikeInfo, 'uid'>) => Promise<void>;
   deleteBike: (v: Pick<BikeInfo, 'uid'>) => Promise<void>;
@@ -48,6 +54,7 @@ const BikesContext = createContext<{
   editBikeRating: (v: EditBikeRatingProps) => Promise<void>;
   fetchBikes: () => Promise<void>;
   editBikeAvailability: (v: EditBikeAvailabilityProps) => Promise<void>;
+  deleteBikeReservation: (v: DeleteBikeReservationProps) => Promise<void>;
   formValidation: (v: FormikValues) => FormikErrors<any>;
   bikes: BikeInfo[];
 } | null>(null);
@@ -160,7 +167,7 @@ export const BikesContextProvider = ({
     }
   };
 
-  const editBikeAvailability = async ({
+  const addBikeReservation = async ({
     dates,
     uid,
     userUid,
@@ -172,6 +179,7 @@ export const BikesContextProvider = ({
         );
       }
 
+      const reservationUid = uuid();
       const docBikeRef = doc(db, 'bikes', uid);
       const docBikeSnap = await getDoc(docBikeRef);
 
@@ -179,7 +187,11 @@ export const BikesContextProvider = ({
         const newAvailability = dates.reduce(
           (acc, current) => ({
             ...acc,
-            [current]: { availability: false, reservedBy: userUid },
+            [current]: {
+              availability: false,
+              reservationUid,
+              reservedBy: userUid,
+            },
           }),
           {}
         );
@@ -201,12 +213,90 @@ export const BikesContextProvider = ({
         const userReservations = docUserSnap.data().reservations ?? {};
         const existingReservations = userReservations[uid] ?? [];
         const newReservations = {
-          [uid]: [...existingReservations, { dates, bikeUid: uid }],
+          [uid]: [
+            ...existingReservations,
+            { dates, bikeUid: uid, reservationUid },
+          ],
         };
 
         const data = {
           reservations: { ...userReservations, ...newReservations },
           uid: userUid,
+        };
+        await updateDoc(docUserRef, data);
+      }
+    } catch (e) {
+      console.error(e);
+      throw e;
+    }
+  };
+
+  const deleteBikeReservation = async ({
+    reservationUid,
+    bikeUid,
+    userUid,
+  }: DeleteBikeReservationProps) => {
+    try {
+      if (!userUid) {
+        throw new Error(
+          'editBikeAvailability: bike with uid doesnt exist or userUid is undefined'
+        );
+      }
+
+      const docBikeRef = doc(db, 'bikes', bikeUid);
+      const docBikeSnap = await getDoc(docBikeRef);
+
+      if (docBikeSnap.exists()) {
+        const existingAvailability = docBikeSnap.data().availability;
+        const updatedAvailabilities = Object.keys(existingAvailability).reduce(
+          (acc, key) => {
+            if (existingAvailability[key].reservationUid === reservationUid) {
+              return { ...acc, [key]: { availability: true } };
+            }
+            return acc;
+          },
+          {}
+        );
+        const newAvailability = {
+          ...docBikeSnap.data().availability,
+          ...updatedAvailabilities,
+        };
+
+        const unavailableDates = Object.keys(newAvailability).filter(
+          (key) => newAvailability[key].availability === false
+        );
+
+        const data = {
+          availability: newAvailability,
+          unavailableDates,
+        };
+        await updateDoc(docBikeRef, data);
+      }
+
+      const docUserRef = doc(db, 'users', userUid);
+      const docUserSnap = await getDoc(docUserRef);
+      if (docUserSnap.exists()) {
+        const userReservations = docUserSnap.data().reservations ?? {};
+
+        const existingReservationsForBike = userReservations[bikeUid] ?? [];
+
+        const newReservationsForBike = existingReservationsForBike.filter(
+          ({ reservationUid: uid }: { reservationUid: string }) =>
+            uid !== reservationUid
+        );
+
+        const newReservations = {
+          ...userReservations,
+          [bikeUid]: newReservationsForBike,
+        };
+
+        const data = {
+          reservations: Object.keys(newReservations).reduce((acc, current) => {
+            if (newReservations[current].length > 0) {
+              return { ...acc, [current]: newReservations[current] };
+            }
+            return acc;
+          }, {}),
         };
         await updateDoc(docUserRef, data);
       }
@@ -282,10 +372,11 @@ export const BikesContextProvider = ({
     () => ({
       addBike,
       bikes,
+      deleteBikeReservation,
       fetchBikes,
       formValidation,
       editBike,
-      editBikeAvailability,
+      editBikeAvailability: addBikeReservation,
       editBikeRating,
       deleteBike,
     }),
