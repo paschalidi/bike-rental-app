@@ -8,7 +8,7 @@ import { BikesContextProvider } from '../src/contexts/bikes';
 import { AccountsContextProvider } from '../src/contexts/accounts';
 import Home from './index';
 
-const Authorization = ({ Component, pageProps }: AppProps) => {
+const Authorization = ({ Component, pageProps }: Omit<AppProps, 'router'>) => {
   const { user } = useAuth();
   const router = useRouter();
   const role = user?.role;
@@ -26,7 +26,7 @@ const Authorization = ({ Component, pageProps }: AppProps) => {
       if (role) {
         router.push(router.pathname.replace('user', role));
       } else {
-        router.push("/login");
+        router.push('/login');
       }
     }
     if (router.pathname.startsWith('/manager') && role !== Roles.Manager) {
