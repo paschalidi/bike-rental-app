@@ -26,11 +26,17 @@ export type BikeInfo = {
   color: string;
   location: string;
   available: boolean;
+  unavailableDates: string[];
   uid: string;
 };
 
-export type EditBikeProps = {
+export type EditBikeRatingProps = {
   rating: string;
+  uid: string;
+};
+
+export type EditBikeAvailabilityProps = {
+  dates: string[];
   uid: string;
 };
 
@@ -38,8 +44,9 @@ const BikesContext = createContext<{
   addBike: (v: Omit<BikeInfo, 'uid'>) => Promise<void>;
   deleteBike: (v: Pick<BikeInfo, 'uid'>) => Promise<void>;
   editBike: (v: BikeInfo) => Promise<void>;
-  editBikeRating: (v: EditBikeProps) => Promise<void>;
+  editBikeRating: (v: EditBikeRatingProps) => Promise<void>;
   fetchBikes: () => Promise<void>;
+  editBikeAvailability: (v: EditBikeAvailabilityProps) => Promise<void>;
   formValidation: (v: FormikValues) => FormikErrors<any>;
   bikes: BikeInfo[];
 } | null>(null);
@@ -64,7 +71,7 @@ const generateAvailabilityForTheComingYear = () => {
 
   while (date <= endDate) {
     const d = new Date(date);
-    Object.assign(dates, { [format(d, 'MM/dd/yyyy')]: { availability: true } });
+    Object.assign(dates, { [format(d, 'yyyy/MM/dd')]: { availability: true } });
     date.setDate(date.getDate() + 1);
   }
 
@@ -95,6 +102,7 @@ export const BikesContextProvider = ({
         location,
         available,
         availability: generateAvailabilityForTheComingYear(),
+        unavailableDates: [],
         uid,
       };
       await setDoc(docRef, data);
@@ -130,7 +138,7 @@ export const BikesContextProvider = ({
     }
   };
 
-  const editBikeRating = async ({ rating, uid }: EditBikeProps) => {
+  const editBikeRating = async ({ rating, uid }: EditBikeRatingProps) => {
     try {
       const docRef = doc(db, 'bikes', uid);
       const docSnap = await getDoc(docRef);
@@ -141,6 +149,27 @@ export const BikesContextProvider = ({
 
         const data = {
           rating: Number(((incomingRating + existingRating) / 2).toFixed(1)),
+          uid,
+        };
+        await updateDoc(docRef, data);
+      }
+    } catch (e) {
+      console.error(e);
+      throw e;
+    }
+  };
+
+  const editBikeAvailability = async ({
+    dates,
+    uid,
+  }: EditBikeAvailabilityProps) => {
+    try {
+      const docRef = doc(db, 'bikes', uid);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const data = {
+          unavailableDates: [...docSnap.data().unavailableDates, ...dates],
           uid,
         };
         await updateDoc(docRef, data);
@@ -173,6 +202,7 @@ export const BikesContextProvider = ({
             rating: document.data().rating,
             location: document.data().location,
             available: document.data().available,
+            unavailableDates: document.data().unavailableDates || [],
             uid: document.data().uid,
           });
         });
@@ -219,6 +249,7 @@ export const BikesContextProvider = ({
       fetchBikes,
       formValidation,
       editBike,
+      editBikeAvailability,
       editBikeRating,
       deleteBike,
     }),

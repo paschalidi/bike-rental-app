@@ -7,7 +7,6 @@ import {
   DropButton,
   Grid,
   Heading,
-  Layer,
   Page,
   PageContent,
   Select,
@@ -16,13 +15,14 @@ import {
   TableCell,
   TableHeader,
   TableRow,
-  Text,
+  Text
 } from 'grommet';
 import { FormSchedule, Star } from 'grommet-icons';
 import { TopBar } from '../../src/components/TopBar';
 import { useBikes } from '../../src/contexts/bikes';
 import { SubmitBikeRatingFormOnModal } from '../../src/components/SubmitBikeRatingFormOnModal';
 import { useFilters } from '../../src/hooks/useFilters';
+import { SubmitBikeReservationFormOnModal } from '../../src/components/SubmitBikeReservationFormOnModal';
 
 const ratingOptions = [
   { value: 1, text: 'greater than 1' },
@@ -286,66 +286,13 @@ const UserBikes: NextPage = () => {
 
       {bikes
         .filter((bike) => bike.uid === activeBikeSchedulingModalUid)
-        .map(({ uid }) => (
-          <Layer
+        .map(({ uid ,unavailableDates}) => (
+          <SubmitBikeReservationFormOnModal
+            unavailableDates={unavailableDates}
             key={uid}
-            onEsc={closeBikeSchedulingModal}
-            onClickOutside={closeBikeSchedulingModal}
-          >
-            <Box
-              align="center"
-              direction="column"
-              border={{ color: 'brand', size: 'small' }}
-              pad="medium"
-            >
-              <Box pad="small">
-                <Heading>Schedule bike</Heading>
-
-                <Box gap="medium" direction="row" margin={{ bottom: 'medium' }}>
-                  <Text ref={startDateButton}>
-                    <Box>
-                      <Text>Start date &nbsp;</Text>
-                      <Text color="neutral-2" weight="bolder">
-                        {selectedDates &&
-                          selectedDates[0][0] &&
-                          new Date(selectedDates[0][0]).toDateString()}
-                      </Text>
-                    </Box>
-                  </Text>
-                  <Text ref={endDateButton}>
-                    <Box>
-                      <Text>End date &nbsp;</Text>
-                      <Text color="neutral-2" weight="bolder">
-                        {selectedDates &&
-                          selectedDates[0][1] &&
-                          new Date(selectedDates[0][1]).toDateString()}
-                      </Text>
-                    </Box>
-                  </Text>
-                </Box>
-                <Calendar
-                  activeDate={activeDate}
-                  dates={selectedDates}
-                  onSelect={(arg) => {
-                    setSelectedDates(arg);
-                    setActiveDate('end');
-                  }}
-                  range="array"
-                />
-                <Button
-                  primary
-                  label="rent bike"
-                  onClick={closeBikeSchedulingModal}
-                  style={{
-                    marginTop: '20px',
-                    marginBottom: '8px',
-                    width: '100%',
-                  }}
-                />
-                <Button label="close" onClick={closeBikeSchedulingModal} />
-              </Box>
-            </Box>
-          </Layer>
+            uid={uid}
+            onClose={closeBikeSchedulingModal}
+          />
         ))}
     </Grid>
   );
