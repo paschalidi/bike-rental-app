@@ -11,7 +11,7 @@ import {
   signInWithEmailAndPassword,
   signOut,
 } from 'firebase/auth';
-import { doc, getDoc, setDoc } from '@firebase/firestore';
+import { doc, onSnapshot, setDoc } from '@firebase/firestore';
 import { auth, db } from '../../config/config.firebase';
 
 export enum Roles {
@@ -23,6 +23,7 @@ type User = {
   uid: string;
   email: string | null;
   role: string;
+  reservations: any;
 };
 
 const AuthContext = createContext<{
@@ -53,21 +54,20 @@ export const AuthContextProvider = ({
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser?.uid) {
-        const docRef = doc(db, 'users', currentUser?.uid);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          setUser({
-            email: docSnap.data().email,
-            uid: docSnap.data().uid,
-            role: docSnap.data().roles[0],
-          });
-        } else {
-          setUser(null);
-        }
+        onSnapshot(doc(db, 'users', currentUser?.uid), (document) => {
+          if (document.exists()) {
+            setUser({
+              email: document.data().email,
+              uid: document.data().uid,
+              role: document.data().roles[0],
+              reservations: document.data().reservations ?? {},
+            });
+            setLoading(false);
+          }
+        });
       } else {
         setUser(null);
       }
-      setLoading(false);
     });
 
     return () => unsubscribe();
