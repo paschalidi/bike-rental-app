@@ -250,18 +250,16 @@ const UserBikes: NextPage = () => {
                         <TableCell>
                           <Text>{rating} out of 5</Text>
                         </TableCell>
-                        <TableCell alignSelf="center">
+                        <TableCell>
                           <Button
                             onClick={() => openBikeScheduling(uid)}
-                            alignSelf="center"
                             secondary
                             icon={<FormSchedule />}
                           />
                         </TableCell>
-                        <TableCell alignSelf="center">
+                        <TableCell>
                           <Button
                             onClick={() => openBikeRatingModal(uid)}
-                            alignSelf="center"
                             icon={<Star />}
                             secondary
                           />
