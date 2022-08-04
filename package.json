@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@firebase/firestore": "^3.4.13",
+    "date-fns": "^2.29.1",
     "firebase": "^9.9.1",
     "formik": "^2.2.9",
     "grommet": "^2.25.1",

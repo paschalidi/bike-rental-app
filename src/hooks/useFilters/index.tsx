@@ -51,7 +51,6 @@ export const useFilters = (bikes: BikeInfo[]) => {
         );
       }
     );
-    console.log(filtered);
     return filtered;
   }, [
     selectedModels,

@@ -5,6 +5,8 @@ import React, {
   useMemo,
   useState,
 } from 'react';
+import { format } from 'date-fns';
+
 import {
   collection,
   deleteDoc,
@@ -52,6 +54,23 @@ export const useBikes = () => {
   return context;
 };
 
+const generateAvailabilityForTheComingYear = () => {
+  const startDate = new Date();
+  const endDate = new Date();
+  endDate.setFullYear(startDate.getFullYear() + 1);
+
+  const date = new Date();
+  const dates = {};
+
+  while (date <= endDate) {
+    const d = new Date(date);
+    Object.assign(dates, { [format(d, 'MM/dd/yyyy')]: { availability: true } });
+    date.setDate(date.getDate() + 1);
+  }
+
+  return dates;
+};
+
 export const BikesContextProvider = ({
   children,
 }: {
@@ -75,6 +94,7 @@ export const BikesContextProvider = ({
         color,
         location,
         available,
+        availability: generateAvailabilityForTheComingYear(),
         uid,
       };
       await setDoc(docRef, data);
