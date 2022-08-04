@@ -38,6 +38,7 @@ export type EditBikeRatingProps = {
 export type EditBikeAvailabilityProps = {
   dates: string[];
   uid: string;
+  userUid?: string;
 };
 
 const BikesContext = createContext<{
@@ -162,17 +163,52 @@ export const BikesContextProvider = ({
   const editBikeAvailability = async ({
     dates,
     uid,
+    userUid,
   }: EditBikeAvailabilityProps) => {
     try {
-      const docRef = doc(db, 'bikes', uid);
-      const docSnap = await getDoc(docRef);
+      if (!userUid) {
+        throw new Error(
+          'editBikeAvailability: bike with uid doesnt exist or userUid is undefined'
+        );
+      }
 
-      if (docSnap.exists()) {
+      const docBikeRef = doc(db, 'bikes', uid);
+      const docBikeSnap = await getDoc(docBikeRef);
+
+      if (docBikeSnap.exists()) {
+        const newAvailability = dates.reduce(
+          (acc, current) => ({
+            ...acc,
+            [current]: { availability: false, reservedBy: userUid },
+          }),
+          {}
+        );
+
         const data = {
-          unavailableDates: [...docSnap.data().unavailableDates, ...dates],
+          availability: {
+            ...docBikeSnap.data().availability,
+            ...newAvailability,
+          },
+          unavailableDates: [...docBikeSnap.data().unavailableDates, ...dates],
           uid,
         };
-        await updateDoc(docRef, data);
+        await updateDoc(docBikeRef, data);
+      }
+
+      const docUserRef = doc(db, 'users', userUid);
+      const docUserSnap = await getDoc(docUserRef);
+      if (docUserSnap.exists()) {
+        const userReservations = docUserSnap.data().reservations ?? {};
+        const existingReservations = userReservations[uid] ?? [];
+        const newReservations = {
+          [uid]: [...existingReservations, { dates, bikeUid: uid }],
+        };
+
+        const data = {
+          reservations: { ...userReservations, ...newReservations },
+          uid: userUid,
+        };
+        await updateDoc(docUserRef, data);
       }
     } catch (e) {
       console.error(e);

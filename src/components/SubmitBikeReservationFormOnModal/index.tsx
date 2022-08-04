@@ -2,16 +2,20 @@ import React, { useRef, useState } from 'react';
 import { Box, Button, Calendar, Heading, Layer, Text } from 'grommet';
 import { format } from 'date-fns';
 import { useBikes } from '../../contexts/bikes';
+import { useAuth } from '../../contexts/auth';
 
 export const SubmitBikeReservationFormOnModal = ({
   uid,
-  onClose,unavailableDates
+  onClose,
+  unavailableDates,
 }: {
   uid: string;
   onClose: () => void;
   unavailableDates: string[];
 }) => {
   const { editBikeAvailability } = useBikes();
+  const { user } = useAuth();
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedDates, setSelectedDates] = useState<any>();
   const [activeDate, setActiveDate] = useState<'start' | 'end' | undefined>(
@@ -33,7 +37,7 @@ export const SubmitBikeReservationFormOnModal = ({
       dates.push(format(d, 'yyyy/MM/dd'));
       date.setDate(date.getDate() + 1);
     }
-    await editBikeAvailability({ dates, uid });
+    await editBikeAvailability({ dates, uid, userUid: user?.uid });
     setIsSubmitting(false);
   };
   return (
