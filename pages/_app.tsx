@@ -11,7 +11,7 @@ import Home from './index';
 const Authorization = ({ Component, pageProps }: AppProps) => {
   const { user } = useAuth();
   const router = useRouter();
-  let role = user?.role;
+  const role = user?.role;
   let allowed = true;
 
   if (router.pathname.startsWith('/user') && role !== Roles.User) {
