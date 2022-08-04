@@ -2,6 +2,10 @@ import { useMemo, useRef, useState } from 'react';
 import { BikeInfo } from '../../contexts/bikes';
 
 export const useFilters = (bikes: BikeInfo[]) => {
+  const bikeModels = useMemo(() => {
+    const b = bikes.map((bike) => bike.model.toLowerCase());
+    return [...new Set(b)];
+  }, [bikes]);
   const bikeColors = useMemo(() => {
     const b = bikes.map((bike) => bike.color.toLowerCase());
     return [...new Set(b)];
@@ -11,9 +15,10 @@ export const useFilters = (bikes: BikeInfo[]) => {
     return [...new Set(b)];
   }, [bikes]);
 
+  const [selectedModels, setSelectedModels] = useState<string[]>([]);
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
-  const [selectedRating, setSelectedRating] = useState([]);
+  const [selectedRating, setSelectedRating] = useState<string>('0');
 
   const [selectedDates, setSelectedDates] = useState<any>();
   const [activeDate, setActiveDate] = useState<'start' | 'end' | undefined>(
@@ -24,17 +29,37 @@ export const useFilters = (bikes: BikeInfo[]) => {
 
   const filteredBikes = useMemo(() => {
     const filtered = bikes.filter(
-      ({ color, location, rating, available }: BikeInfo) => {
-        const isColorOrLocation =
-          selectedColors.includes(color) ||
-          selectedLocations.includes(String(location));
-        const isWithinRating = String(selectedRating) <= rating;
+      ({ model, color, location, rating, available }: BikeInfo) => {
+        const bikesAfterModelFilter = selectedModels.includes(
+          model.toLowerCase()
+        );
+        const bikesAfterColorFilter = selectedColors.includes(
+          color.toLowerCase()
+        );
+        const bikesAfterLocationFilter = selectedLocations.includes(
+          location.toLowerCase()
+        );
 
-        return isColorOrLocation || (isWithinRating && available);
+        const isWithinRating =
+          parseInt(selectedRating, 10) <= parseInt(rating, 10);
+
+        return (
+          bikesAfterModelFilter ||
+          bikesAfterColorFilter ||
+          bikesAfterLocationFilter ||
+          (isWithinRating && available)
+        );
       }
     );
+    console.log(filtered);
     return filtered;
-  }, [selectedColors, selectedLocations, selectedRating, bikes]);
+  }, [
+    selectedModels,
+    selectedColors,
+    selectedLocations,
+    selectedRating,
+    bikes,
+  ]);
 
   return {
     selectedDates,
@@ -47,6 +72,9 @@ export const useFilters = (bikes: BikeInfo[]) => {
     selectedColors,
     selectedLocations,
     filteredBikes,
+    bikeModels,
+    selectedModels,
+    setSelectedModels,
     bikeColors,
     bikeLocations,
     setSelectedColors,

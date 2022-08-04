@@ -49,6 +49,8 @@ const UserBikes: NextPage = () => {
     filteredBikes,
     bikeColors,
     bikeLocations,
+    setSelectedModels,
+    selectedModels,
     setSelectedColors,
     setSelectedLocations,
     setSelectedRating,
@@ -58,6 +60,7 @@ const UserBikes: NextPage = () => {
     setActiveDate,
     startDateButton,
     endDateButton,
+    bikeModels,
   } = useFilters(bikes);
 
   const [activeRatingModalUid, setActiveRatingModalUid] = useState<string>('');
@@ -91,7 +94,7 @@ const UserBikes: NextPage = () => {
         <TopBar />
       </Box>
       <Box gridArea="main">
-        <Page kind="narrow">
+        <Page kind="wide">
           <PageContent>
             <Box
               gap="small"
@@ -158,6 +161,17 @@ const UserBikes: NextPage = () => {
                 pad={{ bottom: 'small' }}
                 align="center"
               >
+                <Select
+                  multiple
+                  size="medium"
+                  placeholder="filter by model"
+                  value={selectedModels}
+                  options={bikeModels}
+                  onChange={({ value: nextValue }) =>
+                    setSelectedModels(nextValue)
+                  }
+                  closeOnChange={false}
+                />
                 <Select
                   multiple
                   size="medium"
