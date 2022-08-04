@@ -24,7 +24,7 @@ export const AddNewBikeForm = () => {
       color: '',
       location: '',
       available: false,
-      rating: 5,
+      rating: "5",
     },
     validate: formValidation,
     onSubmit: async (
