@@ -176,6 +176,7 @@ const UserBikes: NextPage = () => {
                 align="center"
               >
                 <Select
+                  clear
                   multiple
                   size="medium"
                   placeholder="filter by model"
@@ -187,6 +188,7 @@ const UserBikes: NextPage = () => {
                   closeOnChange={false}
                 />
                 <Select
+                  clear
                   multiple
                   size="medium"
                   placeholder="filter by color"
@@ -198,6 +200,7 @@ const UserBikes: NextPage = () => {
                   closeOnChange={false}
                 />
                 <Select
+                  clear
                   multiple
                   size="medium"
                   placeholder="filter by location"
@@ -209,6 +212,7 @@ const UserBikes: NextPage = () => {
                   closeOnChange={false}
                 />
                 <Select
+                  clear
                   size="medium"
                   placeholder="rating greater then"
                   value={selectedRating}
@@ -268,7 +272,7 @@ const UserBikes: NextPage = () => {
                           <Button
                             onClick={() => openBikeSchedulingModal(uid)}
                             secondary
-                            icon={<FormSchedule />}
+                            icon={<FormSchedule color="status-ok" />}
                           />
                           {user?.reservations[uid] && (
                             <Button
@@ -283,7 +287,7 @@ const UserBikes: NextPage = () => {
                         <TableCell>
                           <Button
                             onClick={() => openBikeRatingModal(uid)}
-                            icon={<Star />}
+                            icon={<Star color="accent-4" />}
                             secondary
                           />
                         </TableCell>
