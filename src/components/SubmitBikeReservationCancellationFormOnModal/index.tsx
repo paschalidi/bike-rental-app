@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import {
   Box,
   Button,
+  Heading,
   Layer,
   Table,
   TableBody,
@@ -39,6 +40,9 @@ export const SubmitBikeReservationCancellationFormOnModal = ({
   return (
     <Layer key={bikeUid} onEsc={onClose} onClickOutside={onClose}>
       <Box pad="medium">
+        <Heading margin={{ top: 'small', bottom: 'small' }}>
+          Your reservations
+        </Heading>
         <Table>
           <TableHeader>
             <TableRow>
@@ -49,7 +53,7 @@ export const SubmitBikeReservationCancellationFormOnModal = ({
                 <Text>Dates</Text>
               </TableCell>
               <TableCell scope="col">
-                <Text>Delete</Text>
+                <Text>Actions</Text>
               </TableCell>
             </TableRow>
           </TableHeader>
@@ -66,17 +70,23 @@ export const SubmitBikeReservationCancellationFormOnModal = ({
                 </TableCell>
                 <TableCell>
                   <Button
-                    disabled={isSubmitting}
-                    label="delete reservation"
-                    onClick={() => handleReservationDeletion(reservationUid)}
-                    secondary
                     icon={<FormClose color="status-error" />}
+                    secondary
+                    disabled={isSubmitting}
+                    label="cancel"
+                    onClick={() => handleReservationDeletion(reservationUid)}
                   />
                 </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
+        <Button
+          style={{ marginTop: '40px' }}
+          onClick={onClose}
+          secondary
+          label="close"
+        />
       </Box>
     </Layer>
   );
