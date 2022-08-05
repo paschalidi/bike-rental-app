@@ -55,11 +55,12 @@ const Home: NextPage = () => {
     <>
       <TopBar />
       <Page kind="narrow">
-        <PageContent>
-          <Heading style={{marginTop:'10vh'}}>
-            To rent bikes please sign up first
+        <PageContent align='center'>
+          <Heading style={{marginTop:'10vh'}} >
+            Please sign up first
           </Heading>
           <Button
+            style={{width:"300px"}}
             primary
             label="SING UP NOW"
             size="large"
