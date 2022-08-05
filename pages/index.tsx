@@ -15,9 +15,10 @@ const Home: NextPage = () => {
       <>
         <TopBar />
         <Page kind="narrow">
-          <PageContent>
+          <PageContent align="center">
             <Heading>Want to rent some bikes?</Heading>
             <Button
+              style={{ width: '300px' }}
               primary
               label="GO"
               size="large"
@@ -35,9 +36,10 @@ const Home: NextPage = () => {
       <>
         <TopBar />
         <Page kind="narrow">
-          <PageContent>
+          <PageContent align="center">
             <Heading>Want to view & edit some bikes?</Heading>
             <Button
+              style={{ width: '300px' }}
               primary
               label="GO"
               size="large"
@@ -55,12 +57,10 @@ const Home: NextPage = () => {
     <>
       <TopBar />
       <Page kind="narrow">
-        <PageContent align='center'>
-          <Heading style={{marginTop:'10vh'}} >
-            Please sign up first
-          </Heading>
+        <PageContent align="center">
+          <Heading style={{ marginTop: '10vh' }}>Please sign up first</Heading>
           <Button
-            style={{width:"300px"}}
+            style={{ width: '300px' }}
             primary
             label="SING UP NOW"
             size="large"
