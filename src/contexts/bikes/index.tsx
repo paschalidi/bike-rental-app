@@ -27,6 +27,13 @@ export type BikeInfo = {
   location: string;
   available: boolean;
   unavailableDates: string[];
+  availability: {
+    [key: string]: {
+      availability: boolean;
+      reservedBy?: string;
+      reservationUid?: string;
+    };
+  };
   uid: string;
 };
 
@@ -330,6 +337,7 @@ export const BikesContextProvider = ({
             location: document.data().location,
             available: document.data().available,
             unavailableDates: document.data().unavailableDates || [],
+            availability: document.data().availability || {},
             uid: document.data().uid,
           });
         });

@@ -17,7 +17,7 @@ import {
   TableRow,
   Text
 } from 'grommet';
-import { FormClose, FormSchedule, Star } from 'grommet-icons';
+import { ClearOption, FormClose, FormSchedule, Star } from 'grommet-icons';
 import { TopBar } from '../../src/components/TopBar';
 import { useBikes } from '../../src/contexts/bikes';
 import { SubmitBikeRatingFormOnModal } from '../../src/components/SubmitBikeRatingFormOnModal';
@@ -138,7 +138,7 @@ const UserBikes: NextPage = () => {
                           activeDate={activeDate}
                           dates={selectedDates}
                           onSelect={(arg) => {
-                            setSelectedDates(arg);
+                            setSelectedDates(arg as any);
                             setActiveDate('end');
                           }}
                           range="array"
@@ -166,6 +166,17 @@ const UserBikes: NextPage = () => {
                       </Text>
                     </Box>
                   </Text>
+                  {selectedDates && selectedDates[0][0] && selectedDates[0][1] && (
+                    <Button
+                      plain
+                      onClick={() => {
+                        setSelectedDates(undefined);
+                        setActiveDate(undefined);
+                      }}
+                      label="clear dates"
+                      icon={<ClearOption color="neutral-4" />}
+                    />
+                  )}
                 </Box>
               </Box>
 
