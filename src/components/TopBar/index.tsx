@@ -3,7 +3,7 @@ import React from 'react';
 import { useRouter } from 'next/router';
 import { Roles, useAuth } from '../../contexts/auth';
 
-export const TopBar = ({ onClick }: { onClick?: () => void }) => {
+export const TopBar = ({ onClick = () => null }: { onClick?: () => void }) => {
   const router = useRouter();
   const { user, logout } = useAuth();
 
