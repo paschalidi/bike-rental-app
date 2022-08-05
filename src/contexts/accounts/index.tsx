@@ -1,19 +1,52 @@
-import React, { createContext, useCallback, useContext, useMemo, useState } from 'react';
-import { collection, deleteDoc, doc, onSnapshot, setDoc, updateDoc } from '@firebase/firestore';
-import { uuid } from 'uuidv4';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+} from 'react';
+import {
+  collection,
+  deleteDoc,
+  doc,
+  onSnapshot,
+  setDoc,
+  updateDoc,
+} from '@firebase/firestore';
+import { v4 as uuid } from 'uuid';
 import { db } from '../../config/config.firebase';
 import { Roles } from '../auth';
+
+export type BikeReservation = {
+  dates: string[];
+  reservationUid: string;
+  bikeUid: string;
+  bikeModel: string;
+};
+
+type ReservationsArrayProps = Array<
+  { email: string; uid: string } & BikeReservation
+>;
+
+type ReservationsAttachedToUsersObject = {
+  [key: string]: BikeReservation[];
+};
 
 export type AccountInfo = {
   email: string;
   role: Roles;
   uid: string;
+  reservations: ReservationsAttachedToUsersObject;
 };
 
+type AddAccountProps = Omit<AccountInfo, 'uid'>;
+type EditAccountProps = Omit<AccountInfo, 'reservations'>;
+type DeleteAccountProps = Pick<AccountInfo, 'uid'>;
+
 const AccountsContext = createContext<{
-  addAccount: (v: Omit<AccountInfo, 'uid'>) => Promise<void>;
-  deleteAccount: (v: Pick<AccountInfo, 'uid'>) => any;
-  editAccount: (v: AccountInfo) => Promise<void>;
+  addAccount: (v: AddAccountProps) => Promise<void>;
+  deleteAccount: (v: DeleteAccountProps) => Promise<void>;
+  editAccount: (v: EditAccountProps) => Promise<void>;
   fetchAccounts: () => Promise<void>;
   accounts: AccountInfo[];
 } | null>(null);
@@ -35,7 +68,7 @@ export const AccountsContextProvider = ({
 }) => {
   const [accounts, setAccounts] = useState<AccountInfo[]>([]);
 
-  const addAccount = async ({ email, role }: Omit<AccountInfo, 'uid'>) => {
+  const addAccount = async ({ email, role }: AddAccountProps) => {
     try {
       const uid = uuid();
       const docRef = doc(db, 'users', uid);
@@ -50,7 +83,7 @@ export const AccountsContextProvider = ({
     }
   };
 
-  const editAccount = async ({ role, uid }: Omit<AccountInfo, 'email'>) => {
+  const editAccount = async ({ role, uid }: EditAccountProps) => {
     try {
       const docRef = doc(db, 'users', uid);
       const data = { roles: [role] };
@@ -61,7 +94,7 @@ export const AccountsContextProvider = ({
     }
   };
 
-  const deleteAccount = async ({ uid }: { uid: string }) => {
+  const deleteAccount = async ({ uid }: DeleteAccountProps) => {
     try {
       await deleteDoc(doc(db, 'users', uid));
     } catch (e) {

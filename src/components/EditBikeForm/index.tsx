@@ -1,7 +1,14 @@
 import React, { useState } from 'react';
 import { useFormik } from 'formik';
-import { Button, CheckBox, FormField, Notification, RangeInput, TextInput } from 'grommet';
-import { BikeInfo, useBikes } from '../../contexts/bikes';
+import {
+  Button,
+  CheckBox,
+  FormField,
+  Notification,
+  RangeInput,
+  TextInput,
+} from 'grommet';
+import { EditBikeProps, useBikes } from '../../contexts/bikes';
 
 export const EditBikeForm = ({
   model,
@@ -10,7 +17,7 @@ export const EditBikeForm = ({
   available,
   rating,
   uid,
-}: BikeInfo) => {
+}: EditBikeProps) => {
   const { editBike, formValidation } = useBikes();
   const [showSuccessNotification, setShowSuccessNotification] = useState(false);
 

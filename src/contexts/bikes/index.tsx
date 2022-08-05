@@ -30,14 +30,14 @@ export type BikeInfo = {
   uid: string;
 };
 
-export type EditBikeRatingProps = {
-  rating: string;
-  uid: string;
-};
+export type EditBikeRatingProps = Pick<BikeInfo, 'uid' | 'rating'>;
+export type AddBikeProps = Omit<BikeInfo, 'uid' | 'unavailableDates'>;
+export type EditBikeProps = Omit<BikeInfo, 'unavailableDates'>;
 
 export type EditBikeAvailabilityProps = {
   dates: string[];
   uid: string;
+  bikeModel: string;
   userUid?: string;
 };
 
@@ -48,12 +48,12 @@ export type DeleteBikeReservationProps = {
 };
 
 const BikesContext = createContext<{
-  addBike: (v: Omit<BikeInfo, 'uid'>) => Promise<void>;
+  addBike: (v: AddBikeProps) => Promise<void>;
   deleteBike: (v: Pick<BikeInfo, 'uid'>) => Promise<void>;
-  editBike: (v: BikeInfo) => Promise<void>;
+  editBike: (v: EditBikeProps) => Promise<void>;
   editBikeRating: (v: EditBikeRatingProps) => Promise<void>;
   fetchBikes: () => Promise<void>;
-  editBikeAvailability: (v: EditBikeAvailabilityProps) => Promise<void>;
+  addBikeReservation: (v: EditBikeAvailabilityProps) => Promise<void>;
   deleteBikeReservation: (v: DeleteBikeReservationProps) => Promise<void>;
   formValidation: (v: FormikValues) => FormikErrors<any>;
   bikes: BikeInfo[];
@@ -99,7 +99,7 @@ export const BikesContextProvider = ({
     color,
     location,
     available,
-  }: Omit<BikeInfo, 'uid'>) => {
+  }: AddBikeProps) => {
     try {
       const uid = uuid();
       const docRef = doc(db, 'bikes', uid);
@@ -127,7 +127,7 @@ export const BikesContextProvider = ({
     location,
     available,
     uid,
-  }: BikeInfo) => {
+  }: EditBikeProps) => {
     try {
       const docRef = doc(db, 'bikes', uid);
 
@@ -171,11 +171,12 @@ export const BikesContextProvider = ({
     dates,
     uid,
     userUid,
+    bikeModel,
   }: EditBikeAvailabilityProps) => {
     try {
       if (!userUid) {
         throw new Error(
-          'editBikeAvailability: bike with uid doesnt exist or userUid is undefined'
+          'addBikeReservation: bike with uid doesnt exist or userUid is undefined'
         );
       }
 
@@ -215,7 +216,7 @@ export const BikesContextProvider = ({
         const newReservations = {
           [uid]: [
             ...existingReservations,
-            { dates, bikeUid: uid, reservationUid },
+            { dates, bikeUid: uid, reservationUid, bikeModel },
           ],
         };
 
@@ -239,7 +240,7 @@ export const BikesContextProvider = ({
     try {
       if (!userUid) {
         throw new Error(
-          'editBikeAvailability: bike with uid doesnt exist or userUid is undefined'
+          'addBikeReservation: bike with uid doesnt exist or userUid is undefined'
         );
       }
 
@@ -376,7 +377,7 @@ export const BikesContextProvider = ({
       fetchBikes,
       formValidation,
       editBike,
-      editBikeAvailability: addBikeReservation,
+      addBikeReservation,
       editBikeRating,
       deleteBike,
     }),

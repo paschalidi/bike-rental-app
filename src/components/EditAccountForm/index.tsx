@@ -1,10 +1,20 @@
 import { FormikValues, useFormik } from 'formik';
-import { Button, FormField, Notification, RadioButtonGroup, TextInput } from 'grommet';
+import {
+  Button,
+  FormField,
+  Notification,
+  RadioButtonGroup,
+  TextInput,
+} from 'grommet';
 import React, { useState } from 'react';
 import { Roles } from '../../contexts/auth';
 import { AccountInfo, useAccounts } from '../../contexts/accounts';
 
-export const EditAccountForm = ({ email, role, uid }: AccountInfo) => {
+export const EditAccountForm = ({
+  email,
+  role,
+  uid,
+}: Omit<AccountInfo, 'reservations'>) => {
   const { editAccount } = useAccounts();
   const [showSuccessNotification, setShowSuccessNotification] = useState(false);
 
@@ -38,7 +48,7 @@ export const EditAccountForm = ({ email, role, uid }: AccountInfo) => {
     onSubmit: async (formValues, { setSubmitting }) => {
       setSubmitting(true);
       try {
-        setShowSuccessNotification(false)
+        setShowSuccessNotification(false);
 
         await editAccount({
           email: formValues.email,
@@ -58,21 +68,12 @@ export const EditAccountForm = ({ email, role, uid }: AccountInfo) => {
   return (
     <>
       {showSuccessNotification && (
-        <Notification
-          toast
-          status="normal"
-          title="Edit is successful 🥳"
-        />
+        <Notification toast status="normal" title="Edit is successful 🥳" />
       )}
 
       <form onSubmit={handleSubmit}>
         <FormField label="Email" error={errors.email}>
-          <TextInput
-            disabled
-            name="email"
-            type="email"
-            value={values.email}
-          />
+          <TextInput disabled name="email" type="email" value={values.email} />
         </FormField>
 
         <RadioButtonGroup
