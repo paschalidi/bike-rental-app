@@ -13,6 +13,7 @@ import {
 } from 'firebase/auth';
 import { doc, onSnapshot, setDoc } from '@firebase/firestore';
 import { auth, db } from '../../config/config.firebase';
+import { Loading } from '../../components/Loading';
 
 export enum Roles {
   Manager = 'manager',
@@ -64,6 +65,8 @@ export const AuthContextProvider = ({
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      setLoading(true);
+
       if (currentUser?.uid) {
         onSnapshot(doc(db, 'users', currentUser?.uid), (document) => {
           if (document.exists()) {
@@ -131,7 +134,7 @@ export const AuthContextProvider = ({
 
   return (
     <AuthContext.Provider value={contextValues}>
-      {loading ? null : children}
+      {loading ? <Loading /> : children}
     </AuthContext.Provider>
   );
 };
