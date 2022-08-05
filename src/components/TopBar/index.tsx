@@ -3,12 +3,13 @@ import React from 'react';
 import { useRouter } from 'next/router';
 import { Roles, useAuth } from '../../contexts/auth';
 
-export const TopBar = () => {
+export const TopBar = ({ onClick }: { onClick: () => void }) => {
   const router = useRouter();
   const { user, logout } = useAuth();
 
   return (
     <Box
+      gridArea="header"
       tag="header"
       direction="row"
       align="center"
@@ -18,15 +19,9 @@ export const TopBar = () => {
       elevation="xsmall"
       style={{ zIndex: '1', cursor: 'pointer' }}
     >
-      <Heading
-        level="3"
-        margin="none"
-        as="a"
-        onClick={() => {
-          router.push('/');
-        }}
-      >
-        Bike Rental {user?.role === Roles.Manager ? 'for Managers' : 'for Everyone'}
+      <Heading level="3" margin="none" as="a" onClick={onClick}>
+        Bike Rental{' '}
+        {user?.role === Roles.Manager ? 'for Managers' : 'for Everyone'}
       </Heading>
       {(() => {
         if (user?.uid) {

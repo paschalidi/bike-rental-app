@@ -9,7 +9,7 @@ import {
   TableCell,
   TableHeader,
   TableRow,
-  Text,
+  Text
 } from 'grommet';
 import { Edit, Trash } from 'grommet-icons';
 import { useAccounts } from '../../contexts/accounts';

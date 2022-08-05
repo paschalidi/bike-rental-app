@@ -15,7 +15,7 @@ import {
   TableCell,
   TableHeader,
   TableRow,
-  Text,
+  Text
 } from 'grommet';
 import { FormClose, FormSchedule, Star } from 'grommet-icons';
 import { TopBar } from '../../src/components/TopBar';
@@ -321,7 +321,7 @@ const UserBikes: NextPage = () => {
 
       {bikes
         .filter((bike) => bike.uid === activeBikeCancelReservationModalUid)
-        .map(({ uid ,model}) => (
+        .map(({ uid, model }) => (
           <SubmitBikeReservationCancellationFormOnModal
             model={model}
             key={uid}

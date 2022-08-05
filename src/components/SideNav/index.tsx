@@ -30,7 +30,7 @@ export const SideNav = () => {
   const router = useRouter();
 
   return (
-    <Box direction="row" height={{ min: 'calc(100vh - 60px)' }}>
+    <Box gridArea="sidebar" direction="row" height={{ min: 'calc(100vh - 60px)' }}>
       <Sidebar
         responsive={false}
         background="light-2"
