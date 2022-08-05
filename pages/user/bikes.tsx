@@ -15,9 +15,17 @@ import {
   TableCell,
   TableHeader,
   TableRow,
-  Text
+  Text,
+  Tip
 } from 'grommet';
-import { ClearOption, FormClose, FormSchedule, Star } from 'grommet-icons';
+import {
+  CircleInformation,
+  ClearOption,
+  FormClose,
+  FormSchedule,
+  Schedule,
+  Star
+} from 'grommet-icons';
 import { TopBar } from '../../src/components/TopBar';
 import { useBikes } from '../../src/contexts/bikes';
 import { SubmitBikeRatingFormOnModal } from '../../src/components/SubmitBikeRatingFormOnModal';
@@ -110,82 +118,95 @@ const UserBikes: NextPage = () => {
       <Box gridArea="main">
         <Page kind="wide">
           <PageContent>
-            <Box
-              gap="small"
-              pad={{ vertical: 'small' }}
-              style={{ marginTop: '10vh' }}
-            >
+            <Box pad={{ bottom: 'medium' }} style={{ marginTop: '5vh' }}>
               <Heading level={2} margin={{ top: 'small', bottom: 'small' }}>
-                Filters
+                Select your dates
               </Heading>
-              <Box
-                direction="row"
-                gap="large"
-                pad={{ bottom: 'small' }}
-                border={{
-                  color: 'brand',
-                  size: 'xsmall',
-                  side: 'bottom',
-                }}
-              >
-                <Box direction="row" gap="large">
-                  <DropButton
-                    dropAlign={{ top: 'bottom' }}
-                    label="Dates"
-                    dropContent={
-                      <Box gap="small" pad="small">
-                        <Calendar
-                          activeDate={activeDate}
-                          dates={selectedDates}
-                          onSelect={(arg) => {
-                            setSelectedDates(arg as any);
-                            setActiveDate('end');
-                          }}
-                          range="array"
-                        />
-                      </Box>
-                    }
+              <Box direction="row" gap="large">
+                <DropButton
+                  icon={<Schedule />}
+                  size="large"
+                  dropAlign={{ top: 'bottom' }}
+                  label="Dates"
+                  dropContent={
+                    <Box gap="small" pad="small">
+                      <Calendar
+                        activeDate={activeDate}
+                        dates={selectedDates}
+                        onSelect={(arg) => {
+                          setSelectedDates(arg as any);
+                          setActiveDate('end');
+                        }}
+                        range="array"
+                      />
+                    </Box>
+                  }
+                />
+                <Text ref={startDateButton}>
+                  <Box>
+                    <Text>Starting rental date</Text>
+                    <Text color="neutral-2" weight="bolder">
+                      {selectedDates &&
+                        selectedDates[0][0] &&
+                        new Date(selectedDates[0][0]).toDateString()}
+                    </Text>
+                  </Box>
+                </Text>
+                <Text ref={endDateButton}>
+                  <Box>
+                    <Text>Ending rental date</Text>
+                    <Text color="neutral-2" weight="bolder">
+                      {selectedDates &&
+                        selectedDates[0][1] &&
+                        new Date(selectedDates[0][1]).toDateString()}
+                    </Text>
+                  </Box>
+                </Text>
+                {selectedDates && selectedDates[0][0] && selectedDates[0][1] && (
+                  <Button
+                    plain
+                    onClick={() => {
+                      setSelectedDates(undefined);
+                      setActiveDate(undefined);
+                    }}
+                    label="clear dates"
+                    icon={<ClearOption color="neutral-4" />}
                   />
-                  <Text ref={startDateButton}>
-                    <Box>
-                      <Text>Start date &nbsp;</Text>
-                      <Text color="neutral-2" weight="bolder">
-                        {selectedDates &&
-                          selectedDates[0][0] &&
-                          new Date(selectedDates[0][0]).toDateString()}
-                      </Text>
-                    </Box>
-                  </Text>
-                  <Text ref={endDateButton}>
-                    <Box>
-                      <Text>End date &nbsp;</Text>
-                      <Text color="neutral-2" weight="bolder">
-                        {selectedDates &&
-                          selectedDates[0][1] &&
-                          new Date(selectedDates[0][1]).toDateString()}
-                      </Text>
-                    </Box>
-                  </Text>
-                  {selectedDates && selectedDates[0][0] && selectedDates[0][1] && (
-                    <Button
-                      plain
-                      onClick={() => {
-                        setSelectedDates(undefined);
-                        setActiveDate(undefined);
-                      }}
-                      label="clear dates"
-                      icon={<ClearOption color="neutral-4" />}
-                    />
-                  )}
-                </Box>
+                )}
               </Box>
+            </Box>
 
-              <Box
-                direction="row"
-                gap="small"
-                pad={{ bottom: 'small' }}
-                align="center"
-              >
+            <Box pad={{ vertical: 'medium' }}>
+              <Box direction="row">
+                <Heading level={2} margin={{ top: 'small', bottom: 'small' }}>
+                  Filters
+                </Heading>
+                <Tip
+                  plain
+                  content={
+                    <Box
+                      pad="small"
+                      gap="small"
+                      width={{ max: 'small' }}
+                      round="small"
+                      background="background-front"
+                      responsive={false}
+                    >
+                      <Text weight="bold">Info</Text>
+                      <Text size="small">
+                        The filters are applied using the Logical OR (||)
+                        operator. In other words if you choose a bike with color
+                        red and location Berlin, you will see all bikes that are
+                        red OR are in Berlin
+                      </Text>
+                    </Box>
+                  }
+                  dropProps={{ align: { bottom: 'top' } }}
+                >
+                  <Button icon={<CircleInformation />} />
+                </Tip>
+              </Box>
+              <Box direction="row" gap="xsmall" align="center">
                 <Select
                   clear
                   multiple
@@ -230,6 +251,22 @@ const UserBikes: NextPage = () => {
                   options={ratingOptions.map(({ value }) => value)}
                   onChange={({ option }) => setSelectedRating(option)}
                 />
+                {selectedRating ||
+                selectedColors.length ||
+                selectedLocations.length ||
+                selectedModels.length ? (
+                  <Button
+                    plain
+                    onClick={() => {
+                      setSelectedRating('');
+                      setSelectedLocations([]);
+                      setSelectedColors([]);
+                      setSelectedModels([]);
+                    }}
+                    label="clear filters"
+                    icon={<ClearOption color="neutral-4" />}
+                  />
+                ) : null}
               </Box>
             </Box>
 

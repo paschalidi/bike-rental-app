@@ -1,72 +1,157 @@
 import { useMemo, useRef, useState } from 'react';
+import { format } from 'date-fns';
 import { BikeInfo } from '../../contexts/bikes';
 
-export const useFilters = (bikes: BikeInfo[]) => {
-  const bikeModels = useMemo(() => {
-    const b = bikes.map((bike) => bike.model.toLowerCase());
-    return [...new Set(b)];
-  }, [bikes]);
-  const bikeColors = useMemo(() => {
-    const b = bikes.map((bike) => bike.color.toLowerCase());
-    return [...new Set(b)];
-  }, [bikes]);
-  const bikeLocations = useMemo(() => {
-    const b = bikes.map((bike) => bike.location.toLowerCase());
-    return [...new Set(b)];
-  }, [bikes]);
+const generateAllDatesInBetween = (
+  filterStartDate: string,
+  filterEndDate: string
+) => {
+  const date = new Date(filterStartDate);
+  const endDate = new Date(filterEndDate);
 
+  const dates = [];
+  //
+  while (date <= endDate) {
+    const d = new Date(date);
+    dates.push(format(d, 'yyyy/MM/dd'));
+    date.setDate(date.getDate() + 1);
+  }
+
+  return dates;
+};
+
+export const useFilters = (bikes: BikeInfo[]) => {
   const [selectedModels, setSelectedModels] = useState<string[]>([]);
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
   const [selectedRating, setSelectedRating] = useState<string | undefined>();
 
-  const [selectedDates, setSelectedDates] = useState<any>();
+  const [selectedDates, setSelectedDates] = useState<
+    (string | string[])[] | undefined
+  >();
   const [activeDate, setActiveDate] = useState<'start' | 'end' | undefined>(
     undefined
   );
-  const startDateButton = useRef() as React.MutableRefObject<HTMLInputElement>;
-  const endDateButton = useRef() as React.MutableRefObject<HTMLInputElement>;
 
   const filteredBikes = useMemo(() => {
     const filtered = bikes.filter(
-      ({ model, color, location, rating, available }: BikeInfo) => {
-        const bikesAfterModelFilter = selectedModels.includes(
+      ({
+        model,
+        color,
+        location,
+        rating,
+        available,
+        availability,
+      }: BikeInfo) => {
+        const isBikeIncludedAfterModelFiltering = selectedModels.includes(
           model.toLowerCase()
         );
-        const bikesAfterColorFilter = selectedColors.includes(
+        const isBikeIncludedAfterColorFiltering = selectedColors.includes(
           color.toLowerCase()
         );
-        const bikesAfterLocationFilter = selectedLocations.includes(
+        const isBikeIncludedAfterLocationFiltering = selectedLocations.includes(
           location.toLowerCase()
         );
 
+        const dateFiltering = (
+          filterStartDate: string,
+          filterEndDate: string
+        ) => {
+          const dates = generateAllDatesInBetween(
+            filterStartDate,
+            filterEndDate
+          );
+          return dates
+            .map((date) => availability[date]?.availability)
+            .every((element) => element === true);
+        };
+
+        const rateFiltering = (givenRating: string, filterRating: string) =>
+          parseInt(givenRating, 10) <= parseInt(filterRating, 10);
+
+        const filterStartDate = selectedDates?.[0]?.[0];
+        const filterEndDate = selectedDates?.[0]?.[1];
         // when all filters are untouched we want to show all bikes
         if (
           selectedModels.length === 0 &&
           selectedColors.length === 0 &&
           selectedLocations.length === 0 &&
+          (filterStartDate === undefined || filterEndDate === undefined) &&
           !selectedRating
         ) {
           return true;
         }
-        // when _only_ rating is untouched we dont want to include its value on the filtering
-        if (selectedRating === 'undefined') {
+        const dateFilterIsSet = filterStartDate && filterEndDate;
+        const modelFilterIsSet = selectedModels.length > 0;
+        const colorFilterIsSet = selectedColors.length > 0;
+        const locationFilterIsSet = selectedLocations.length > 0;
+        const ratingFilterIsSet = selectedRating;
+
+        if (dateFilterIsSet) {
+          const isBikeIncludedAfterDateFiltering = dateFiltering(
+            filterStartDate,
+            filterEndDate
+          );
+          const isBikeIncludedWithinRating = rateFiltering(
+            selectedRating as string,
+            rating
+          );
+
+          if (
+            modelFilterIsSet ||
+            colorFilterIsSet ||
+            locationFilterIsSet ||
+            ratingFilterIsSet
+          ) {
+            return (
+              (isBikeIncludedAfterModelFiltering ||
+                isBikeIncludedAfterColorFiltering ||
+                isBikeIncludedAfterLocationFiltering ||
+                isBikeIncludedWithinRating) &&
+              isBikeIncludedAfterDateFiltering &&
+              available
+            );
+          }
+
+          return isBikeIncludedAfterDateFiltering && available;
+        }
+
+        if (
+          selectedModels.length ||
+          selectedColors.length ||
+          selectedLocations.length ||
+          selectedRating
+        ) {
+          const isBikeIncludedWithinRating = rateFiltering(
+            selectedRating as string,
+            rating
+          );
+
           return (
-            (bikesAfterModelFilter ||
-              bikesAfterColorFilter ||
-              bikesAfterLocationFilter) &&
+            (isBikeIncludedAfterModelFiltering ||
+              isBikeIncludedAfterColorFiltering ||
+              isBikeIncludedAfterLocationFiltering ||
+              isBikeIncludedWithinRating) &&
             available
           );
         }
 
-        // when rating is touched we include all filters
+        if (!selectedRating) {
+          return (
+            (isBikeIncludedAfterModelFiltering ||
+              isBikeIncludedAfterColorFiltering ||
+              isBikeIncludedAfterLocationFiltering) &&
+            available
+          );
+        }
+
         const isWithinRating =
           parseInt(selectedRating as string, 10) <= parseInt(rating, 10);
 
         return (
-          (bikesAfterModelFilter ||
-            bikesAfterColorFilter ||
-            bikesAfterLocationFilter ||
+          (isBikeIncludedAfterModelFiltering ||
+            isBikeIncludedAfterColorFiltering ||
+            isBikeIncludedAfterLocationFiltering ||
             isWithinRating) &&
           available
         );
@@ -74,6 +159,7 @@ export const useFilters = (bikes: BikeInfo[]) => {
     );
     return filtered;
   }, [
+    selectedDates,
     selectedModels,
     selectedColors,
     selectedLocations,
@@ -81,22 +167,37 @@ export const useFilters = (bikes: BikeInfo[]) => {
     bikes,
   ]);
 
+  const startDateButton = useRef() as React.MutableRefObject<HTMLInputElement>;
+  const endDateButton = useRef() as React.MutableRefObject<HTMLInputElement>;
+
   return {
-    selectedDates,
-    setSelectedDates,
-    activeDate,
-    setActiveDate,
+    bikeModels: useMemo(() => {
+      const b = bikes.map((bike) => bike.model.toLowerCase());
+      return [...new Set(b)];
+    }, [bikes]),
+    bikeColors: useMemo(() => {
+      const b = bikes.map((bike) => bike.color.toLowerCase());
+      return [...new Set(b)];
+    }, [bikes]),
+    bikeLocations: useMemo(() => {
+      const b = bikes.map((bike) => bike.location.toLowerCase());
+      return [...new Set(b)];
+    }, [bikes]),
+    filteredBikes,
+
     startDateButton,
     endDateButton,
-    selectedRating,
+
+    activeDate,
+    selectedDates,
+    selectedModels,
     selectedColors,
     selectedLocations,
-    filteredBikes,
-    bikeModels,
-    selectedModels,
+    selectedRating,
+
+    setActiveDate,
+    setSelectedDates,
     setSelectedModels,
-    bikeColors,
-    bikeLocations,
     setSelectedColors,
     setSelectedLocations,
     setSelectedRating,
