@@ -31,7 +31,7 @@ const Authorization = ({ Component, pageProps }: Omit<AppProps, 'router'>) => {
     }
     if (router.pathname.startsWith('/manager') && role !== Roles.Manager) {
       if (role) {
-        router.push(router.pathname.replace('teacher', role));
+        router.push(router.pathname.replace('manager', role));
       } else {
         router.push('/login');
       }
