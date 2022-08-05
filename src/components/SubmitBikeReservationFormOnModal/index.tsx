@@ -42,6 +42,8 @@ export const SubmitBikeReservationFormOnModal = ({
     await addBikeReservation({ dates, uid, userUid: user?.uid, bikeModel });
     setIsSubmitting(false);
   };
+
+  console.log(selectedDates && selectedDates[0][1]);
   return (
     <Layer key={uid} onEsc={onClose} onClickOutside={onClose}>
       <Box
@@ -86,7 +88,7 @@ export const SubmitBikeReservationFormOnModal = ({
             range="array"
           />
           <Button
-            disabled={!selectedDates || isSubmitting}
+            disabled={!selectedDates || (selectedDates && !selectedDates[0][1]) || isSubmitting}
             primary
             label="rent bike"
             onClick={submitBikeReservation}
