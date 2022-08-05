@@ -9,7 +9,7 @@ export const AddNewAccountForm = ({
 }: {
   redirectAfterCreation?: boolean; // eslint-disable-line
 }) => {
-  const { signup } = useAuth();
+  const { signup, user } = useAuth();
   const router = useRouter();
   const [showSuccessNotification, setShowSuccessNotification] = useState(false);
 
@@ -51,7 +51,7 @@ export const AddNewAccountForm = ({
     onSubmit: async ({ email, password, role }, { setSubmitting }) => {
       setSubmitting(true);
       try {
-        setShowSuccessNotification(false)
+        setShowSuccessNotification(false);
         await signup({ email, password, role });
         if (redirectAfterCreation) {
           router.push(
@@ -115,6 +115,17 @@ export const AddNewAccountForm = ({
           disabled={isSubmitting}
           aria-disabled={isSubmitting}
         />
+
+        {!user?.uid && (
+          <Button
+            onClick={() => router.push('/login')}
+            style={{ marginTop: '40px', marginLeft: '8px' }}
+            secondary
+            label="log in now"
+            disabled={isSubmitting}
+            aria-disabled={isSubmitting}
+          />
+        )}
       </form>
     </>
   );
