@@ -49,6 +49,7 @@ const AccountsContext = createContext<{
   editAccount: (v: EditAccountProps) => Promise<void>;
   fetchAccounts: () => Promise<void>;
   accounts: AccountInfo[];
+  reservations: ReservationsArrayProps | null;
 } | null>(null);
 
 export const useAccounts = () => {
@@ -67,6 +68,8 @@ export const AccountsContextProvider = ({
   children: React.ReactNode;
 }) => {
   const [accounts, setAccounts] = useState<AccountInfo[]>([]);
+  const [reservations, setReservations] =
+    useState<ReservationsArrayProps | null>(null);
 
   const addAccount = async ({ email, role }: AddAccountProps) => {
     try {
@@ -114,9 +117,26 @@ export const AccountsContextProvider = ({
             email: document.data().email,
             role: document.data().roles[0],
             uid: document.data().uid,
+            reservations: document.data().reservations,
           });
         });
         setAccounts(listOfAccounts);
+        const reservationsMade = listOfAccounts
+          .map(({ reservations: userReservationsPerBike = {}, uid, email }) =>
+            Object.values(userReservationsPerBike)
+              .filter((r) => r.length > 0)
+              .map((bikeReservations) =>
+                bikeReservations.map((reservation) => ({
+                  ...reservation,
+                  uid,
+                  email,
+                }))
+              )
+          )
+          .filter((r) => r.length > 0)
+          .flat(Infinity) as ReservationsArrayProps;
+
+        setReservations(reservationsMade);
       });
     } catch (e) {
       console.error(e);
@@ -131,8 +151,9 @@ export const AccountsContextProvider = ({
       fetchAccounts,
       editAccount,
       deleteAccount,
+      reservations,
     }),
-    [accounts]
+    [accounts, reservations]
   );
 
   return (

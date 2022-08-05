@@ -8,12 +8,14 @@ export const SubmitBikeReservationFormOnModal = ({
   uid,
   onClose,
   unavailableDates,
+  bikeModel,
 }: {
   uid: string;
   onClose: () => void;
   unavailableDates: string[];
+  bikeModel: string;
 }) => {
-  const { editBikeAvailability } = useBikes();
+  const { addBikeReservation } = useBikes();
   const { user } = useAuth();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -37,7 +39,7 @@ export const SubmitBikeReservationFormOnModal = ({
       dates.push(format(d, 'yyyy/MM/dd'));
       date.setDate(date.getDate() + 1);
     }
-    await editBikeAvailability({ dates, uid, userUid: user?.uid });
+    await addBikeReservation({ dates, uid, userUid: user?.uid, bikeModel });
     setIsSubmitting(false);
   };
   return (

@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 
 import { Box, Button, Nav, Sidebar } from 'grommet';
 
-import { Add, Bike, Group, UserAdd } from 'grommet-icons';
+import { Add, Bike, Group, Task, UserAdd } from 'grommet-icons';
 
 const SidebarButton = ({
   icon,
@@ -64,6 +64,14 @@ export const SideNav = () => {
             label="View & Edit Accounts"
             onClick={() => {
               router.push('/manager/accounts');
+            }}
+          />
+          <hr/>
+          <SidebarButton
+            icon={<Task />}
+            label="View Reservations"
+            onClick={() => {
+              router.push('/manager/reservations');
             }}
           />
         </Nav>

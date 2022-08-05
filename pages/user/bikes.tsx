@@ -309,12 +309,13 @@ const UserBikes: NextPage = () => {
 
       {bikes
         .filter((bike) => bike.uid === activeBikeSchedulingModalUid)
-        .map(({ uid, unavailableDates }) => (
+        .map(({ uid, unavailableDates, model }) => (
           <SubmitBikeReservationFormOnModal
             unavailableDates={unavailableDates}
             key={uid}
             uid={uid}
             onClose={closeBikeSchedulingModal}
+            bikeModel={model}
           />
         ))}
 

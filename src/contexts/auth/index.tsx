@@ -19,11 +19,22 @@ export enum Roles {
   User = 'user',
 }
 
+export type BikeReservation = {
+  dates: string[];
+  reservationUid: string;
+  bikeUid: string;
+  bikeModel: string;
+};
+
+type ReservationsAttachedToUsersObject = {
+  [key: string]: BikeReservation[];
+};
+
 type User = {
   uid: string;
   email: string | null;
   role: string;
-  reservations: any;
+  reservations: ReservationsAttachedToUsersObject;
 };
 
 const AuthContext = createContext<{
@@ -67,6 +78,7 @@ export const AuthContextProvider = ({
         });
       } else {
         setUser(null);
+        setLoading(false);
       }
     });
 
