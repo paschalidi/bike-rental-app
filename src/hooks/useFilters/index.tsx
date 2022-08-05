@@ -18,7 +18,7 @@ export const useFilters = (bikes: BikeInfo[]) => {
   const [selectedModels, setSelectedModels] = useState<string[]>([]);
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
-  const [selectedRating, setSelectedRating] = useState<string>('0');
+  const [selectedRating, setSelectedRating] = useState<string | undefined>();
 
   const [selectedDates, setSelectedDates] = useState<any>();
   const [activeDate, setActiveDate] = useState<'start' | 'end' | undefined>(
@@ -40,14 +40,35 @@ export const useFilters = (bikes: BikeInfo[]) => {
           location.toLowerCase()
         );
 
+        // when all filters are untouched we want to show all bikes
+        if (
+          selectedModels.length === 0 &&
+          selectedColors.length === 0 &&
+          selectedLocations.length === 0 &&
+          !selectedRating
+        ) {
+          return true;
+        }
+        // when _only_ rating is untouched we dont want to include its value on the filtering
+        if (selectedRating === 'undefined') {
+          return (
+            (bikesAfterModelFilter ||
+              bikesAfterColorFilter ||
+              bikesAfterLocationFilter) &&
+            available
+          );
+        }
+
+        // when rating is touched we include all filters
         const isWithinRating =
-          parseInt(selectedRating, 10) <= parseInt(rating, 10);
+          parseInt(selectedRating as string, 10) <= parseInt(rating, 10);
 
         return (
-          bikesAfterModelFilter ||
-          bikesAfterColorFilter ||
-          bikesAfterLocationFilter ||
-          (isWithinRating && available)
+          (bikesAfterModelFilter ||
+            bikesAfterColorFilter ||
+            bikesAfterLocationFilter ||
+            isWithinRating) &&
+          available
         );
       }
     );
