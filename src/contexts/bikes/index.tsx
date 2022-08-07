@@ -162,8 +162,8 @@ export const BikesContextProvider = ({
       const docSnap = await getDoc(docRef);
 
       if (docSnap.exists()) {
-        const existingRating = parseInt(docSnap.data().rating, 10);
-        const incomingRating = parseInt(rating, 10);
+        const existingRating = parseFloat(docSnap.data().rating);
+        const incomingRating = parseFloat(rating);
 
         const data = {
           rating: Number(((incomingRating + existingRating) / 2).toFixed(1)),
