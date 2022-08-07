@@ -21,6 +21,9 @@ function createFirebaseApp(config: FirebaseOptions) {
   }
 }
 
+const firebaseDetachedApp = initializeApp(firebaseConfig, 'authApp');
+export const detachedAuth = getAuth(firebaseDetachedApp);
+
 const firebaseApp = createFirebaseApp(firebaseConfig);
 export const auth = getAuth(firebaseApp);
 export const db = getFirestore(app);

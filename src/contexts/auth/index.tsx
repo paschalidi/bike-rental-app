@@ -12,7 +12,7 @@ import {
   signOut,
 } from 'firebase/auth';
 import { doc, onSnapshot, setDoc } from '@firebase/firestore';
-import { auth, db } from '../../config/config.firebase';
+import { auth, db, detachedAuth } from '../../config/config.firebase';
 import { Loading } from '../../components/Loading';
 
 export enum Roles {
@@ -99,7 +99,7 @@ export const AuthContextProvider = ({
   }) => {
     try {
       const firebase = await createUserWithEmailAndPassword(
-        auth,
+        detachedAuth,
         email,
         password
       );

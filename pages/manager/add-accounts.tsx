@@ -15,7 +15,7 @@ const ManagerDashboard: NextPage = () => (
               <AddNewAccountForm redirectAfterCreation={false} />
             </div>
           </PageContent>
-        </Page>{' '}
+        </Page>
       </PageContent>
     </Page>
   </ManagerAppGrid>
