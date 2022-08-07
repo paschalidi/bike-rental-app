@@ -3,6 +3,7 @@ import { Heading, Page, PageContent } from 'grommet';
 import React from 'react';
 import { AddNewAccountForm } from '../../src/components/AddNewAccountForm';
 import { ManagerAppGrid } from '../../src/components/ManagerAppGrid';
+import { detachedAuth } from '../../src/config/config.firebase';
 
 const ManagerDashboard: NextPage = () => (
   <ManagerAppGrid>
@@ -12,7 +13,10 @@ const ManagerDashboard: NextPage = () => (
           <PageContent>
             <div style={{ marginTop: '5vh' }}>
               <Heading>Add new account</Heading>
-              <AddNewAccountForm redirectAfterCreation={false} />
+              <AddNewAccountForm
+                firebaseAuth={detachedAuth}
+                redirectAfterCreation={false}
+              />
             </div>
           </PageContent>
         </Page>

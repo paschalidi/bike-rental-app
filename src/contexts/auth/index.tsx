@@ -6,13 +6,14 @@ import React, {
   useState,
 } from 'react';
 import {
+  Auth,
   createUserWithEmailAndPassword,
   onAuthStateChanged,
   signInWithEmailAndPassword,
   signOut,
 } from 'firebase/auth';
 import { doc, onSnapshot, setDoc } from '@firebase/firestore';
-import { auth, db, detachedAuth } from '../../config/config.firebase';
+import { auth, db } from '../../config/config.firebase';
 import { Loading } from '../../components/Loading';
 
 export enum Roles {
@@ -40,7 +41,12 @@ type User = {
 
 const AuthContext = createContext<{
   login: (v: { email: string; password: string }) => void;
-  signup: (v: { email: string; password: string; role: Roles }) => void;
+  signup: (v: {
+    firebaseAuth: Auth;
+    email: string;
+    password: string;
+    role: Roles;
+  }) => void;
   logout: () => void;
   user: User | null;
 } | null>(null);
@@ -81,25 +87,27 @@ export const AuthContextProvider = ({
         });
       } else {
         setUser(null);
-        setLoading(false);
       }
+      setLoading(false);
     });
 
     return () => unsubscribe();
   }, []);
 
   const signup = async ({
+    firebaseAuth,
     email,
     password,
     role,
   }: {
+    firebaseAuth: Auth;
     email: string;
     password: string;
     role: Roles;
   }) => {
     try {
       const firebase = await createUserWithEmailAndPassword(
-        detachedAuth,
+        firebaseAuth,
         email,
         password
       );

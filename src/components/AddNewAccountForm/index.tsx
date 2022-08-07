@@ -1,12 +1,21 @@
 import { FormikValues, useFormik } from 'formik';
 import { useRouter } from 'next/router';
-import { Button, FormField, Notification, RadioButtonGroup, TextInput } from 'grommet';
+import {
+  Button,
+  FormField,
+  Notification,
+  RadioButtonGroup,
+  TextInput,
+} from 'grommet';
 import React, { useState } from 'react';
+import { Auth } from 'firebase/auth';
 import { Roles, useAuth } from '../../contexts/auth';
 
 export const AddNewAccountForm = ({
+  firebaseAuth,
   redirectAfterCreation = true,
 }: {
+  firebaseAuth: Auth;
   redirectAfterCreation?: boolean; // eslint-disable-line
 }) => {
   const { signup, user } = useAuth();
@@ -52,7 +61,7 @@ export const AddNewAccountForm = ({
       setSubmitting(true);
       try {
         setShowSuccessNotification(false);
-        await signup({ email, password, role });
+        await signup({ firebaseAuth, email, password, role });
         if (redirectAfterCreation) {
           router.push(
             role === Roles.Manager ? '/manager/bikes' : '/user/bikes'
@@ -74,10 +83,9 @@ export const AddNewAccountForm = ({
     <>
       {showSuccessNotification && (
         <Notification
-          actions={[{ label: 'View all accounts', href: '/manager/accounts' }]}
           toast
           status="normal"
-          title="You have added a new account holder."
+          title="You have added a new account"
         />
       )}
 
