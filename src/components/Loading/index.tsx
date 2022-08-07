@@ -4,12 +4,9 @@ import React from 'react';
 export const Loading = () => (
   <Box fill>
     <Box margin="large" align="center">
-      <Box direction="row" gap="large" pad="small">
-        <Spinner
-          animation={{ type: 'pulse', duration: 650, size: 'medium' }}
-          justify="center"
-        >
-          <Text margin={{ horizontal: 'small' }}> Loading...</Text>
+      <Box direction="row" gap="xlarge" pad="small">
+        <Spinner animation={{ type: 'pulse', duration: 650, size: 'large' }}>
+          <Text size="xlarge">Loading</Text>
         </Spinner>
       </Box>
     </Box>
