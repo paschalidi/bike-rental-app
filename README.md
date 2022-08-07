@@ -10,7 +10,7 @@ You will need to have the right env variables for firebase. I didn't include the
 they are secrets and secrets like those are not supposed to be committed. 
 You can contact me on `paschalidi@outlook.com` and I can pass you the secrets.
 
-Otherwise you can see the app from this linkhttps://bike-rental-app.vercel.app/
+Otherwise you can see the app from this link https://bike-rental-app.vercel.app/
 
 ## To run the app
 
