@@ -87,8 +87,8 @@ export const AuthContextProvider = ({
         });
       } else {
         setUser(null);
+        setLoading(false);
       }
-      setLoading(false);
     });
 
     return () => unsubscribe();

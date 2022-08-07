@@ -1,6 +1,5 @@
 import { Box, Spinner, Text } from 'grommet';
 import React from 'react';
-import { Favorite } from 'grommet-icons';
 
 export const Loading = () => (
   <Box fill>
@@ -10,9 +9,8 @@ export const Loading = () => (
           animation={{ type: 'pulse', duration: 650, size: 'medium' }}
           justify="center"
         >
-          <Favorite color="red" size="large" />
+          <Text margin={{ horizontal: 'small' }}> Loading...</Text>
         </Spinner>
-        <Text margin={{ horizontal: 'small' }}> Loading...</Text>
       </Box>
     </Box>
   </Box>
