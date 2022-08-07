@@ -34,25 +34,9 @@ export const useFilters = (bikes: BikeInfo[]) => {
   );
 
   const filteredBikes = useMemo(() => {
-    const filtered = bikes.filter(
-      ({
-        model,
-        color,
-        location,
-        rating,
-        available,
-        availability,
-      }: BikeInfo) => {
-        const isBikeIncludedAfterModelFiltering = selectedModels.includes(
-          model.toLowerCase()
-        );
-        const isBikeIncludedAfterColorFiltering = selectedColors.includes(
-          color.toLowerCase()
-        );
-        const isBikeIncludedAfterLocationFiltering = selectedLocations.includes(
-          location.toLowerCase()
-        );
-
+    const filtered = bikes
+      .filter(({ available }) => available)
+      .filter(({ model, color, location, rating, availability }: BikeInfo) => {
         const dateFiltering = (
           filterStartDate: string,
           filterEndDate: string
@@ -66,97 +50,83 @@ export const useFilters = (bikes: BikeInfo[]) => {
             .every((element) => element === true);
         };
 
-        const rateFiltering = (givenRating: string, filterRating: string) =>
-          parseInt(givenRating, 10) <= parseInt(filterRating, 10);
+        const rateFiltering = (bikeRating: string, filterRating: string) =>
+          Boolean(Number(bikeRating) - Number(filterRating) >= 0);
+
+        const isBikeIncludedAfterModelFiltering = selectedModels.includes(
+          model.toLowerCase()
+        );
+        const isBikeIncludedAfterColorFiltering = selectedColors.includes(
+          color.toLowerCase()
+        );
+        const isBikeIncludedAfterLocationFiltering = selectedLocations.includes(
+          location.toLowerCase()
+        );
+
+        const isBikeIncludedWithinRating = rateFiltering(
+          rating,
+          selectedRating as string
+        );
 
         const filterStartDate = selectedDates?.[0]?.[0];
         const filterEndDate = selectedDates?.[0]?.[1];
-        // when all filters are untouched we want to show all bikes
-        if (
-          selectedModels.length === 0 &&
-          selectedColors.length === 0 &&
-          selectedLocations.length === 0 &&
-          (filterStartDate === undefined || filterEndDate === undefined) &&
-          !selectedRating
-        ) {
-          return true;
-        }
-        const dateFilterIsSet = filterStartDate && filterEndDate;
-        const modelFilterIsSet = selectedModels.length > 0;
-        const colorFilterIsSet = selectedColors.length > 0;
-        const locationFilterIsSet = selectedLocations.length > 0;
-        const ratingFilterIsSet = selectedRating;
 
+        const dateFilterIsSet = filterStartDate && filterEndDate;
+
+        const isAnyOfTheFiltersSet =
+          selectedModels.length > 0 ||
+          selectedColors.length > 0 ||
+          selectedLocations.length > 0 ||
+          selectedRating;
+
+        // when the user has set the dates
         if (dateFilterIsSet) {
           const isBikeIncludedAfterDateFiltering = dateFiltering(
             filterStartDate,
             filterEndDate
           );
-          const isBikeIncludedWithinRating = rateFiltering(
-            selectedRating as string,
-            rating
-          );
 
-          if (
-            modelFilterIsSet ||
-            colorFilterIsSet ||
-            locationFilterIsSet ||
-            ratingFilterIsSet
-          ) {
+          if (isAnyOfTheFiltersSet) {
+            if (!selectedRating) {
+              return (
+                (isBikeIncludedAfterModelFiltering ||
+                  isBikeIncludedAfterColorFiltering ||
+                  isBikeIncludedAfterLocationFiltering) &&
+                isBikeIncludedAfterDateFiltering
+              );
+            }
             return (
               (isBikeIncludedAfterModelFiltering ||
                 isBikeIncludedAfterColorFiltering ||
                 isBikeIncludedAfterLocationFiltering ||
                 isBikeIncludedWithinRating) &&
-              isBikeIncludedAfterDateFiltering &&
-              available
+              isBikeIncludedAfterDateFiltering
             );
           }
 
-          return isBikeIncludedAfterDateFiltering && available;
+          return isBikeIncludedAfterDateFiltering;
         }
 
-        if (
-          selectedModels.length ||
-          selectedColors.length ||
-          selectedLocations.length ||
-          selectedRating
-        ) {
-          const isBikeIncludedWithinRating = rateFiltering(
-            selectedRating as string,
-            rating
-          );
+        // when the user is applying filtering without having set any dates
+        if (isAnyOfTheFiltersSet) {
+          if (!selectedRating) {
+            return (
+              isBikeIncludedAfterModelFiltering ||
+              isBikeIncludedAfterColorFiltering ||
+              isBikeIncludedAfterLocationFiltering
+            );
+          }
 
           return (
-            (isBikeIncludedAfterModelFiltering ||
-              isBikeIncludedAfterColorFiltering ||
-              isBikeIncludedAfterLocationFiltering ||
-              isBikeIncludedWithinRating) &&
-            available
-          );
-        }
-
-        if (!selectedRating) {
-          return (
-            (isBikeIncludedAfterModelFiltering ||
-              isBikeIncludedAfterColorFiltering ||
-              isBikeIncludedAfterLocationFiltering) &&
-            available
-          );
-        }
-
-        const isWithinRating =
-          parseInt(selectedRating as string, 10) <= parseInt(rating, 10);
-
-        return (
-          (isBikeIncludedAfterModelFiltering ||
+            isBikeIncludedAfterModelFiltering ||
             isBikeIncludedAfterColorFiltering ||
             isBikeIncludedAfterLocationFiltering ||
-            isWithinRating) &&
-          available
-        );
-      }
-    );
+            isBikeIncludedWithinRating
+          );
+        }
+
+        return true;
+      });
     return filtered;
   }, [
     selectedDates,
