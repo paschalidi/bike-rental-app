@@ -3,6 +3,7 @@ import { Box, Button, Calendar, Heading, Layer, Text } from 'grommet';
 import { format } from 'date-fns';
 import { useBikes } from '../../contexts/bikes';
 import { useAuth } from '../../contexts/auth';
+import { deriveCalendarBounds } from '../../utils/calendar';
 
 export const SubmitBikeReservationFormOnModal = ({
   uid,
@@ -78,6 +79,7 @@ export const SubmitBikeReservationFormOnModal = ({
             </Text>
           </Box>
           <Calendar
+            bounds={deriveCalendarBounds()}
             disabled={unavailableDates}
             activeDate={activeDate}
             dates={selectedDates}
@@ -88,7 +90,11 @@ export const SubmitBikeReservationFormOnModal = ({
             range="array"
           />
           <Button
-            disabled={!selectedDates || (selectedDates && !selectedDates[0][1]) || isSubmitting}
+            disabled={
+              !selectedDates ||
+              (selectedDates && !selectedDates[0][1]) ||
+              isSubmitting
+            }
             primary
             label="rent bike"
             onClick={submitBikeReservation}

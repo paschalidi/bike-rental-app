@@ -33,6 +33,7 @@ import { useFilters } from '../../src/hooks/useFilters';
 import { SubmitBikeReservationFormOnModal } from '../../src/components/SubmitBikeReservationFormOnModal';
 import { useAuth } from '../../src/contexts/auth';
 import { SubmitBikeReservationCancellationFormOnModal } from '../../src/components/SubmitBikeReservationCancellationFormOnModal';
+import { deriveCalendarBounds } from '../../src/utils/calendar';
 
 const ratingOptions = [
   { value: 1, text: 'greater than 1' },
@@ -131,6 +132,7 @@ const UserBikes: NextPage = () => {
                   dropContent={
                     <Box gap="small" pad="small">
                       <Calendar
+                        bounds={deriveCalendarBounds()}
                         activeDate={activeDate}
                         dates={selectedDates}
                         onSelect={(arg) => {
