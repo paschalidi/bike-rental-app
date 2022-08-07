@@ -42,7 +42,7 @@ export type AddBikeProps = Omit<
   BikeInfo,
   'uid' | 'unavailableDates' | 'availability'
 >;
-export type EditBikeProps = Omit<BikeInfo, 'unavailableDates'>;
+export type EditBikeProps = Omit<BikeInfo, 'unavailableDates' | 'availability'>;
 
 export type EditBikeAvailabilityProps = {
   dates: string[];
