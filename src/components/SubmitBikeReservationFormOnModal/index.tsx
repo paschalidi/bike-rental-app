@@ -44,7 +44,6 @@ export const SubmitBikeReservationFormOnModal = ({
     setIsSubmitting(false);
   };
 
-  console.log(selectedDates && selectedDates[0][1]);
   return (
     <Layer key={uid} onEsc={onClose} onClickOutside={onClose}>
       <Box
